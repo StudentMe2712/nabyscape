@@ -43,7 +43,7 @@ public sealed partial class OverlayWindow
         }
         Track(closedAssistant);Track(peekAssistant);
     }
-    private bool AssistantCharacterAvailable=>app.Assistant.Options.IslandCharacter || app.Assistant.VoiceConnected || app.Assistant.WakeListening || app.Assistant.Desktop.Sharing || app.Assistant.Busy || assistantReplyShowing;
+    private bool AssistantCharacterAvailable=>app.Settings.CompactLayout || app.Assistant.Options.IslandCharacter || app.Assistant.VoiceConnected || app.Assistant.WakeListening || app.Assistant.Desktop.Sharing || app.Assistant.Busy || assistantReplyShowing;
     private bool AssistantSpotifyPlaying=>app.Media.Available && app.Media.Playing && (app.Media.Selected?.SourceAppUserModelId.Contains("Spotify",StringComparison.OrdinalIgnoreCase)==true);
     internal bool AssistantOpen=>assistantOpen && expanded;
     internal bool AssistantPeeking=>assistantPeeking;
@@ -57,9 +57,10 @@ public sealed partial class OverlayWindow
     private void InitializeAssistantIsland(Grid header)
     {
         header.ColumnDefinitions.Add(new(){Width=GridLength.Auto});Grid.SetColumn(assistantHeaderSpace,5);header.Children.Add(assistantHeaderSpace);
-        assistantCharacterHost.HorizontalAlignment=HorizontalAlignment.Center;assistantCharacterHost.VerticalAlignment=VerticalAlignment.Top;
-        assistantCharacterButton=AssistantOrb.Launcher("AI character on island",()=>OpenAssistant(),closedAssistant);assistantCharacterButton.MinHeight=24;assistantCharacterButton.Margin=new(0,0,9,0);assistantCharacterButton.HorizontalAlignment=HorizontalAlignment.Right;assistantCharacterButton.VerticalAlignment=VerticalAlignment.Center;assistantCharacterButton.ToolTip="AI companion · hover to meet · click to chat";
-        assistantCharacterButton.MouseEnter+=(_,_)=>{hoverDelay.Stop();assistantHover.Interval=TimeSpan.FromMilliseconds(app.Settings.HoverDelayMs);assistantHover.Start();};
+        assistantCharacterHost.HorizontalAlignment=HorizontalAlignment.Center;assistantCharacterHost.VerticalAlignment=VerticalAlignment.Center;
+        closedAssistant.HorizontalAlignment=HorizontalAlignment.Center;closedAssistant.VerticalAlignment=VerticalAlignment.Center;
+        assistantCharacterButton=AssistantOrb.Launcher("AI character on island",()=>{if(expanded)Collapse();else{LeaveAssistantPanel();Reveal();}},closedAssistant);assistantCharacterButton.MinHeight=24;assistantCharacterButton.Margin=new Thickness(0);assistantCharacterButton.HorizontalAlignment=HorizontalAlignment.Center;assistantCharacterButton.VerticalAlignment=VerticalAlignment.Center;assistantCharacterButton.ToolTip="Naby · click to open · Esc to close";
+        assistantCharacterButton.MouseEnter+=(_,_)=>{hoverDelay.Stop();};
         assistantCharacterButton.MouseLeave+=(_,_)=>assistantHover.Stop();
         assistantCharacterButton.PreviewMouseLeftButtonDown+=(_,_)=>assistantHover.Stop();
         assistantCharacterButton.MouseEnter+=(_,_)=>closedAssistant.SetHover(true);
@@ -73,7 +74,7 @@ public sealed partial class OverlayWindow
         assistantGreeting.FontWeight=FontWeights.SemiBold;assistantGreeting.TextWrapping=TextWrapping.NoWrap;assistantGreeting.TextTrimming=TextTrimming.CharacterEllipsis;assistantPeekWords.Children.Add(assistantGreeting);assistantCaption.Margin=new(0,5,0,0);assistantCaption.MaxHeight=46;assistantCaption.TextTrimming=TextTrimming.CharacterEllipsis;assistantPeekWords.Children.Add(assistantCaption);Grid.SetColumn(assistantPeekWords,1);hero.Children.Add(assistantPeekWords);assistantPeek.Children.Add(hero);
         var chat=AssistantWindow.Pill("Chat here",()=>OpenAssistant(),true);assistantTalk=AssistantWindow.Pill("Talk",()=>{if(app.Assistant.VoiceConnected)_=app.Assistant.EndVoice();else{app.OpenVoice();_=app.Assistant.StartVoice();}});
         assistantPeekActions.Children.Add(chat);assistantPeekActions.Children.Add(assistantTalk);Grid.SetRow(assistantPeekActions,1);assistantPeek.Children.Add(assistantPeekActions);InitializeAssistantReply();visuals.Children.Add(assistantPeek);
-        assistantHover.Tick+=(_,_)=>{assistantHover.Stop();if(assistantCharacterButton.IsMouseOver && !expanded && !userHidden)PreviewAssistant();};
+        assistantHover.Tick+=(_,_)=>{assistantHover.Stop();};
         assistantReplyDismiss.Tick+=(_,_)=>AssistantReplyTick();
         assistantLastReply=LatestAssistantReply();
         app.Assistant.Changed+=QueueAssistantIslandChanged;app.Assistant.VisualChanged+=RefreshAssistantVisuals;app.SettingsChanged+=RefreshAssistantCharacter;

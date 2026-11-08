@@ -71,11 +71,12 @@ public sealed partial class Settings
     public bool MonitorNetwork { get; set; }=true;
     public bool MonitorStorage { get; set; }=true;
     public bool MonitorProcesses { get; set; }=true;
-    public List<WidgetSetting> HoverViews { get; set; }=new[]{"media","timer","focus","calendar","notes","files","system"}.Select(id=>new WidgetSetting{Id=id,Enabled=id!="system"}).ToList();
+    public static readonly HashSet<string> AllowedWidgets = new(StringComparer.OrdinalIgnoreCase) { "media", "timer", "focus", "system", "notes", "tasks" };
+    public List<WidgetSetting> HoverViews { get; set; }=AllowedWidgets.Select(id=>new WidgetSetting{Id=id,Enabled=true}).ToList();
     public bool ClipboardHistory { get; set; }
-    public List<WidgetSetting> Tools {get;set;}=ToolNames.Keys.Select(id=>new WidgetSetting{Id=id}).ToList();
-    public static readonly Dictionary<string,string> ToolNames=new(){["files"]="File shelf",["notes"]="Notes",["tasks"]="Tasks",["clips"]="Clipboard",["calendar"]="Calendar",["awake"]="Keep awake",["links"]="Clean links",["power"]="Power plan",["weather"]="Weather"};
-    public bool ToolEnabled(string id)=>Widgets.FirstOrDefault(t=>t.Id==id)?.Enabled ?? (Widgets.Any(w=>w.Id=="tools" && w.Enabled) && Tools.Any(t=>t.Id==id && t.Enabled));
+    public List<WidgetSetting> Tools {get;set;}=ToolNames.Keys.Select(id=>new WidgetSetting{Id=id,Enabled=true}).ToList();
+    public static readonly Dictionary<string,string> ToolNames=new(){["notes"]="Заметки",["tasks"]="Задачи"};
+    public bool ToolEnabled(string id)=>Widgets.FirstOrDefault(t=>t.Id==id)?.Enabled ?? Tools.Any(t=>t.Id==id && t.Enabled);
     public string Performance { get; set; } = "Auto";
     public string WheelAction { get; set; } = "volume";
     public string MiddleAction { get; set; } = "toggle";
@@ -126,11 +127,14 @@ public sealed partial class Settings
     };
     public static readonly Dictionary<string,string> Names = new()
     {
-        ["voice"]="Naby voice", ["media"]="Media", ["volume"]="Volume", ["timer"]="Timer", ["stopwatch"]="Stopwatch", ["focus"]="Focus mode",
-        ["clock"]="Clock & date", ["system"]="System monitor", ["battery"]="Battery", ["shortcuts"]="Shortcuts",["tools"]="Everyday tools",
-        ["files"]="File shelf",["notes"]="Notes",["tasks"]="Tasks",["clips"]="Clipboard",["calendar"]="Calendar",["awake"]="Keep awake",["links"]="Clean links",["power"]="Power plan",["weather"]="Weather"
+        ["media"]="Музыка",
+        ["timer"]="Таймер",
+        ["focus"]="Фокус",
+        ["system"]="Система",
+        ["notes"]="Заметки",
+        ["tasks"]="Задачи"
     };
-    public static List<WidgetSetting> Defaults() => Names.Keys.Where(id=>id!="tools").Select(id => new WidgetSetting { Id=id,Enabled=id is not ("stopwatch" or "voice" or "power") }).ToList();
+    public static List<WidgetSetting> Defaults() => AllowedWidgets.Select(id => new WidgetSetting { Id=id,Enabled=true }).ToList();
     public void Normalize()
     {
         NormalizeLanguageAccessibility();
@@ -147,8 +151,8 @@ public sealed partial class Settings
         AnimationMs=Clamp(AnimationMs,0,600,420);
         PanelWidth=Clamp(PanelWidth,300,960,384);PanelMaxHeight=Clamp(PanelMaxHeight,240,1100,408);PanelPadding=Clamp(PanelPadding,16,40,32);PanelScale=Clamp(PanelScale,.85,1.25,1);SectionGap=Clamp(SectionGap,8,28,18);
         HoverWidth=Clamp(HoverWidth,300,760,350);HoverHeight=Clamp(HoverHeight,184,440,192);HoverDelayMs=Math.Clamp(HoverDelayMs,80,900);HoverDetailDelayMs=Math.Clamp(HoverDetailDelayMs,200,1200);SwipeDistance=Clamp(SwipeDistance,24,100,48);GlassStrength=Clamp(GlassStrength,0,1,1);
-        var hoverIds=HoverPagePolicy.Ids;HoverViews=(HoverViews??new()).Where(v=>v!=null && hoverIds.Contains(v.Id)).DistinctBy(v=>v.Id).ToList();foreach(var id in hoverIds)if(!HoverViews.Any(v=>v.Id==id))HoverViews.Add(new(){Id=id,Enabled=id is not ("system" or "clips" or "tasks" or "stopwatch")});
-        Tools=(Tools??new()).Where(t=>t!=null && ToolNames.ContainsKey(t.Id)).DistinctBy(t=>t.Id).ToList();foreach(var id in ToolNames.Keys)if(!Tools.Any(t=>t.Id==id))Tools.Add(new(){Id=id});
+        var hoverIds=HoverPagePolicy.Ids;HoverViews=(HoverViews??new()).Where(v=>v!=null && AllowedWidgets.Contains(v.Id)).DistinctBy(v=>v.Id).ToList();foreach(var id in AllowedWidgets)if(!HoverViews.Any(v=>v.Id==id))HoverViews.Add(new(){Id=id,Enabled=true});
+        Tools=(Tools??new()).Where(t=>t!=null && ToolNames.ContainsKey(t.Id)).DistinctBy(t=>t.Id).ToList();foreach(var id in ToolNames.Keys)if(!Tools.Any(t=>t.Id==id))Tools.Add(new(){Id=id,Enabled=true});
         if(Performance is not ("Auto" or "Hemat" or "Maksimal"))Performance="Auto";
         if(WheelAction is not ("volume" or "pages" or "none"))WheelAction="volume";
         if(MiddleAction is not ("toggle" or "microphone" or "none"))MiddleAction="toggle";
@@ -169,17 +173,9 @@ public sealed partial class Settings
         if(!ValidColor(ControlFill))ControlFill="#16171B";
         if(!ValidColor(ControlBorder))ControlBorder="#303238";
         if(!ValidColor(SelectionFill))SelectionFill="#34373E";
-        Widgets=(Widgets ?? new()).Where(w=>w!=null && Names.ContainsKey(w.Id)).DistinctBy(w=>w.Id).ToList();
-        int legacy=Widgets.FindIndex(w=>w.Id=="tools");
-        if(legacy>=0)
-        {
-            bool enabled=Widgets[legacy].Enabled;Widgets.RemoveAt(legacy);
-            foreach(var tool in Tools)if(!Widgets.Any(w=>w.Id==tool.Id))Widgets.Insert(legacy++,new(){Id=tool.Id,Enabled=enabled && tool.Enabled});
-        }
-        foreach(var id in Names.Keys.Where(id=>id!="tools")) if(!Widgets.Any(w=>w.Id==id)) Widgets.Add(new(){Id=id,Enabled=id=="weather" || id is not ("stopwatch" or "voice" or "power") && !ToolNames.ContainsKey(id)});
-        // Legacy availability also gates hover pages. Hiding a main-panel widget
-        // must not remove an independently enabled hover page.
-        foreach(var tool in Tools)tool.Enabled|=Widgets.Any(w=>w.Id==tool.Id && w.Enabled);
+        Widgets=(Widgets ?? new()).Where(w=>w!=null && AllowedWidgets.Contains(w.Id)).DistinctBy(w=>w.Id).ToList();
+        foreach(var id in AllowedWidgets) if(!Widgets.Any(w=>w.Id==id)) Widgets.Add(new(){Id=id,Enabled=true});
+        foreach(var tool in Tools)tool.Enabled=Widgets.Any(w=>w.Id==tool.Id && w.Enabled);
         NormalizeMediaUx();NormalizePremium();NormalizeFlexible();
         Shortcuts=(Shortcuts ?? new()).Where(s=>s!=null && !string.IsNullOrWhiteSpace(s.Name) && !string.IsNullOrWhiteSpace(s.Target)).Take(40).ToList();
         Monitor ??= "";

@@ -7,7 +7,7 @@ namespace NabyScape;
 // Never apply this to transcripts, user labels, filenames, provider IDs or persisted values.
 internal static class Localization
 {
-    internal static string Language { get; private set; } = "en";
+    internal static string Language { get; private set; } = "ru";
     internal static void Configure(Settings settings)
     {
         settings.NormalizeLanguageAccessibility();
@@ -19,8 +19,12 @@ internal static class Localization
     internal static string Text(string english)
     {
         if (!LocalizationCatalog.English.TryGetValue(english, out var entry)) return english;
-        return Language switch { "es" when entry.Spanish.Length > 0 => entry.Spanish,
-            "id" when entry.Indonesian.Length > 0 => entry.Indonesian, _ => english };
+        return Language switch {
+            "ru" when entry.Russian.Length > 0 => entry.Russian,
+            "es" when entry.Spanish.Length > 0 => entry.Spanish,
+            "id" when entry.Indonesian.Length > 0 => entry.Indonesian,
+            _ => Language == "ru" && entry.Russian.Length > 0 ? entry.Russian : english
+        };
     }
 
     internal static string Format(string english, params object[] values)

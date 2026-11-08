@@ -23,11 +23,14 @@ public sealed partial class SettingsWindow
     }
     private FrameworkElement PremiumChoice(string name,string value,string[] values,Action<string> change)
     {
-        var choice=new ComboBox{ItemsSource=values,SelectedItem=value,MinHeight=32,Margin=new(0,4,0,10)};UI.Named(choice,name);
-        choice.SelectionChanged+=(_,_)=>{if(choice.SelectedItem is string selected){change(selected);Save();}};
+        var choice=new ComboBox{MinHeight=32,Margin=new(0,4,0,10)};
+        foreach(var item in values)choice.Items.Add(Localization.Text(item));
+        choice.SelectedIndex=Math.Max(0,Array.IndexOf(values,value));
+        UI.Named(choice,name);
+        choice.SelectionChanged+=(_,_)=>{if(choice.SelectedIndex>=0){change(values[choice.SelectedIndex]);Save();}};
         if(name.StartsWith("Quiet hours"))return choice;
         string label=name switch{"Ambient scope"=>"Where the light appears","Ambient color source"=>"Color source","Cover palette"=>"Album colors","Ambient audio response"=>"React to music","Ambient movement"=>"Light movement","Interaction feedback"=>"Hover & click feedback","Dock side"=>"Dock position",_=>name};
-        var field=new StackPanel();var caption=UI.Text(label,11,UI.Muted);caption.Margin=new(0,4,0,0);field.Children.Add(caption);field.Children.Add(choice);return field;
+        var field=new StackPanel();var caption=UI.Caption(label,11,UI.Muted);caption.Margin=new(0,4,0,0);field.Children.Add(caption);field.Children.Add(choice);return field;
     }
     private void AmbientSettings()
     {

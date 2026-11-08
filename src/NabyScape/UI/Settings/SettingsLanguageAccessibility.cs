@@ -10,9 +10,9 @@ public sealed partial class SettingsWindow
     {
         var settings = app.Settings;
         settings.NormalizeLanguageAccessibility();
-        var codes = new[] { "en", "es", "id" };
-        var language = new ComboBox { ItemsSource = new[] { "English", "Español", "Bahasa Indonesia" },
-            SelectedIndex = Array.IndexOf(codes, settings.UiLanguage) };
+        var codes = new[] { "ru", "en", "es", "id" };
+        var language = new ComboBox { ItemsSource = new[] { "Русский", "English", "Español", "Bahasa Indonesia" },
+            SelectedIndex = Math.Max(0, Array.IndexOf(codes, settings.UiLanguage)) };
         UI.LocalizedName(language, "Interface language");
         var scale = new ComboBox { ItemsSource = new[] { "100%", "110%", "125%", "150%" } };
         var sizes = new[] { 1d, 1.1, 1.25, 1.5 };

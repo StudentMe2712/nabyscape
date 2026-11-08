@@ -63,7 +63,7 @@ internal sealed class CountdownView : StackPanel
 
     private static StackPanel Field(string label,TextBox input)
     {
-        var panel=new StackPanel();var text=UI.Caption(label,10,UI.Muted);text.Margin=new(0,0,0,7);panel.Children.Add(text);
+        var panel=new StackPanel();var text=UI.Caption(Localization.Text(label),10,UI.Muted);text.Margin=new(0,0,0,7);panel.Children.Add(text);
         input.MinHeight=32;input.MinHeight=32;input.FontSize=12;input.MaxLength=8;input.Padding=new(0,5,0,5);input.Margin=new(0);input.BorderThickness=new(0);input.Background=Brushes.Transparent;input.HorizontalContentAlignment=HorizontalAlignment.Center;
         input.GotKeyboardFocus+=(_,_)=>input.SelectAll();
         double maximum=label.StartsWith("Break")?120:label.StartsWith("Focus")?240:1440;
@@ -132,7 +132,7 @@ internal sealed class CountdownView : StackPanel
         minutes.IsEnabled=breaks.IsEnabled=!active;
         progress.Value=active || completed?state.Progress(now):0;
         progress.Accent(focus && state.Phase!="break");
-        durationLabel.Text=active || completed?"of "+(state.DurationSeconds/60).ToString("0.#",CultureInfo.CurrentCulture)+" min":focus?"Focus · "+minutes.Text+" min":"of "+minutes.Text+" min";
+        durationLabel.Text=active || completed?Localization.Format("of {0} min",(state.DurationSeconds/60).ToString("0.#",CultureInfo.CurrentCulture)):focus?Localization.Format("Focus · {0} min",minutes.Text):Localization.Format("of {0} min",minutes.Text);
         hint.Text=!active && !valid?Localization.Text(focus?"Use 1–240 focus and 1–120 break minutes.":"Enter 0.1–1440 minutes."):completed?Localization.Text("Time is up."):focus?Localization.Format("{0} min break after focus.",breaks.Text):"";
         hint.Foreground=!active && !valid?UI.Brush("#F0B8A8"):UI.Muted;
     }

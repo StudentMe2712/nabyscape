@@ -2,6 +2,7 @@
   "format": "luma.layout.v1",
   "values": {
     "HoverFollowsWidgets": true,
+    "UiLanguage": "ru",
     "FollowMonitorAnimation": true,
     "FollowMonitorDuration": 360,
     "DockUnlocked": false,
@@ -40,23 +41,11 @@
     "AmbientScope": "Music only",
     "AmbientWidgets": [
       "media",
-      "volume",
       "timer",
-      "stopwatch",
       "focus",
-      "clock",
       "system",
-      "battery",
-      "shortcuts",
-      "files",
       "notes",
-      "tasks",
-      "clips",
-      "calendar",
-      "awake",
-      "links",
-      "closed",
-      "ai"
+      "tasks"
     ],
     "AmbientColorSource": "Album cover",
     "AmbientCustomColor": "#7AA8DC",
@@ -94,7 +83,7 @@
         "Enabled": true
       },
       {
-        "Id": "calendar",
+        "Id": "system",
         "Enabled": true
       },
       {
@@ -102,65 +91,13 @@
         "Enabled": true
       },
       {
-        "Id": "files",
-        "Enabled": true
-      },
-      {
-        "Id": "system",
-        "Enabled": false
-      },
-      {
-        "Id": "clips",
-        "Enabled": false
-      },
-      {
         "Id": "tasks",
-        "Enabled": false
-      },
-      {
-        "Id": "stopwatch",
-        "Enabled": false
-      },
-      {
-        "Id": "volume",
-        "Enabled": true
-      },
-      {
-        "Id": "weather",
-        "Enabled": true
-      },
-      {
-        "Id": "clock",
-        "Enabled": true
-      },
-      {
-        "Id": "battery",
-        "Enabled": true
-      },
-      {
-        "Id": "shortcuts",
-        "Enabled": true
-      },
-      {
-        "Id": "awake",
-        "Enabled": true
-      },
-      {
-        "Id": "links",
-        "Enabled": true
-      },
-      {
-        "Id": "voice",
         "Enabled": true
       }
     ],
     "Widgets": [
       {
         "Id": "media",
-        "Enabled": true
-      },
-      {
-        "Id": "volume",
         "Enabled": true
       },
       {
@@ -172,31 +109,7 @@
         "Enabled": true
       },
       {
-        "Id": "clock",
-        "Enabled": true
-      },
-      {
-        "Id": "weather",
-        "Enabled": true
-      },
-      {
         "Id": "system",
-        "Enabled": true
-      },
-      {
-        "Id": "battery",
-        "Enabled": true
-      },
-      {
-        "Id": "shortcuts",
-        "Enabled": true
-      },
-      {
-        "Id": "stopwatch",
-        "Enabled": true
-      },
-      {
-        "Id": "files",
         "Enabled": true
       },
       {
@@ -208,20 +121,48 @@
         "Enabled": true
       },
       {
+        "Id": "volume",
+        "Enabled": false
+      },
+      {
+        "Id": "clock",
+        "Enabled": false
+      },
+      {
+        "Id": "weather",
+        "Enabled": false
+      },
+      {
+        "Id": "battery",
+        "Enabled": false
+      },
+      {
+        "Id": "shortcuts",
+        "Enabled": false
+      },
+      {
+        "Id": "stopwatch",
+        "Enabled": false
+      },
+      {
+        "Id": "files",
+        "Enabled": false
+      },
+      {
         "Id": "clips",
-        "Enabled": true
+        "Enabled": false
       },
       {
         "Id": "calendar",
-        "Enabled": true
+        "Enabled": false
       },
       {
         "Id": "awake",
-        "Enabled": true
+        "Enabled": false
       },
       {
         "Id": "links",
-        "Enabled": true
+        "Enabled": false
       },
       {
         "Id": "voice",
@@ -262,35 +203,11 @@
     "PanelSwipe": true,
     "Tools": [
       {
-        "Id": "files",
-        "Enabled": true
-      },
-      {
         "Id": "notes",
         "Enabled": true
       },
       {
         "Id": "tasks",
-        "Enabled": true
-      },
-      {
-        "Id": "clips",
-        "Enabled": true
-      },
-      {
-        "Id": "calendar",
-        "Enabled": true
-      },
-      {
-        "Id": "awake",
-        "Enabled": true
-      },
-      {
-        "Id": "links",
-        "Enabled": true
-      },
-      {
-        "Id": "weather",
         "Enabled": true
       }
     ]

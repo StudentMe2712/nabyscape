@@ -58,9 +58,9 @@ public sealed partial class OverlayWindow
         bool cover=!FeedbackVisible && !countdown && !ClosedVoiceActivity && app.Settings.ClosedMediaIcon=="Artwork" && ClosedMediaActive && app.Media.Artwork!=null;
         bool waveform=UpdateClosedMediaWaveform();
         if(!app.Media.Playing || app.Audio.MediaMeterMuted || app.Settings.ReduceMotion || !app.Settings.LiveActivity)closedTitleWave.Sample(0,1,0,false,false,false,0);
-        closedCover.Visibility=cover?Visibility.Visible:Visibility.Collapsed;
-        activity.Visibility=FeedbackVisible || cover || waveform || ClosedVoiceActivity || ((app.Settings.ClosedMediaContent is "Lyrics" or "None" || app.Settings.ClosedMediaIcon=="None") && !countdown) || !(countdown || ClosedMediaActive)?Visibility.Collapsed:Visibility.Visible;
-        if(cover)SwapArtwork(closedCoverImage,app.Media.Artwork);
+        closedCover.Visibility=Visibility.Collapsed;
+        closedTitleWave.Visibility=Visibility.Collapsed;
+        activity.Visibility=Visibility.Collapsed;
         RefreshIdleDock();UpdateClosedLyricsDemand();
     }
 }

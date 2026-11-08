@@ -28,20 +28,19 @@ public sealed partial class OverlayWindow
     {
         if(!idleDockReady)return;
         idleClosed=IdleContent && !TuckRequested && !dockEditing;
+        compactClock.Visibility=Visibility.Collapsed;
+        idleDate.Visibility=Visibility.Collapsed;
+        summary.Visibility=Visibility.Collapsed;
+        closedSummaryHost.Visibility=Visibility.Collapsed;
+        closedTitleWave.Visibility=Visibility.Collapsed;
+        awakeMark.Visibility=Visibility.Collapsed;
+        activity.Visibility=Visibility.Collapsed;
+        closedCover.Visibility=Visibility.Collapsed;
         if(idleLayoutState!=idleClosed)
         {
             idleLayoutState=idleClosed;
-            Grid.SetColumn(compactClock,idleClosed?0:4);compactClock.Margin=idleClosed?new(0):new(12,0,0,0);
-            Accessibility.SetFontSize(compactClock,idleClosed?11:12);compactClock.FontWeight=idleClosed?FontWeights.Medium:FontWeights.Bold;
-            if(idleClosed){activity.Visibility=closedTitleWave.Visibility=closedCover.Visibility=summary.Visibility=Visibility.Collapsed;}
-            else summary.Visibility=closedTitleWave.Visibility==Visibility.Visible?Visibility.Collapsed:Visibility.Visible;
             UpdateAmbientMotion();
         }
-        if(idleClosed)summary.Visibility=Visibility.Collapsed;
-        // Equal side clearance keeps the date on the dock's center, independent of the clock or character.
-        double dateRoom=ClosedContentWidth-compact.Padding.Left-compact.Padding.Right-2*Math.Max(60,compactClock.ActualWidth+10);
-        idleDate.MaxWidth=Math.Max(0,dateRoom);
-        idleDate.Visibility=idleClosed && app.Settings.ShowDate && compactClock.Visibility==Visibility.Visible && dateRoom>=80?Visibility.Visible:Visibility.Collapsed;
         if(idleDate.Visibility==Visibility.Visible && idleDateDay!=DateTime.Today)
         {
             idleDateDay=DateTime.Today;var culture=System.Globalization.CultureInfo.GetCultureInfo("en-US");
