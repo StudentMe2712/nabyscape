@@ -32,7 +32,7 @@ public sealed partial class SettingsWindow
         HomeFeatureStatuses();
         tiles.SizeChanged+=(_,_)=>tiles.Columns=tiles.ActualWidth<480?1:2;
     }
-    // The welcome card is the page header for Start here: one sentence, one primary action, Naby.
+    // The welcome card is the page header for Начало работы: one sentence, one primary action, Naby.
     private Border HomeHero()
     {
         var grid=new Grid();grid.ColumnDefinitions.Add(new());grid.ColumnDefinitions.Add(new(){Width=GridLength.Auto});

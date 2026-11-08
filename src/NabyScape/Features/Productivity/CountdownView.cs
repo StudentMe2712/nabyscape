@@ -33,7 +33,7 @@ internal sealed class CountdownView : StackPanel
         string id=focus?"focus":"timer";
         var header=new DockPanel{LastChildFill=true,Margin=new(0,0,0,9)};
         status.HorizontalAlignment=HorizontalAlignment.Right;DockPanel.SetDock(status,Dock.Right);header.Children.Add(status);
-        if(heading){var title=UI.Heading(Localization.Text(focus?"Focus":"Timer"),13);title.FontWeight=FontWeights.SemiBold;header.Children.Add(title);}Children.Add(header);
+        if(heading){var title=UI.Heading(Localization.Text(focus?"Фокус":"Таймер"),13);title.FontWeight=FontWeights.SemiBold;header.Children.Add(title);}Children.Add(header);
         Typography.SetNumeralAlignment(digits,FontNumeralAlignment.Tabular);digits.FontWeight=FontWeights.Medium;digits.TextWrapping=TextWrapping.NoWrap;digits.HorizontalAlignment=HorizontalAlignment.Center;
         progress.Accent(focus);UI.Named(progress,focus?"Focus session progress":"Timer progress");
         var instrument=new Grid{Margin=new(0,4,0,14)};instrument.Children.Add(progress);

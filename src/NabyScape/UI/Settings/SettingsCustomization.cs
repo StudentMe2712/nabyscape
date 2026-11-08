@@ -66,7 +66,7 @@ public sealed partial class SettingsWindow
         var s=app.Settings;
         var views=new StackPanel{Visibility=s.HoverFollowsWidgets?Visibility.Collapsed:Visibility.Visible};
         views.Children.Add(WidgetOrder(s.HoverViews,"hover"));
-        page.Children.Add(Section("Hover pages",Check("Show all active widgets in hover",s.HoverFollowsWidgets,v=>{s.HoverFollowsWidgets=v;views.Visibility=v?Visibility.Collapsed:Visibility.Visible;}),UI.Text("Uses the same order as Your widgets. Turn this off to choose a separate hover order below.",11,UI.Muted),views));
+        page.Children.Add(Section("Hover pages",Check("Show all active widgets in hover",s.HoverFollowsWidgets,v=>{s.HoverFollowsWidgets=v;views.Visibility=v?Visibility.Collapsed:Visibility.Visible;}),UI.Text("Использует тот же порядок, что и Ваши виджеты. Отключите это, чтобы выбрать отдельный порядок ниже.",11,UI.Muted),views));
     }
 
     private void RenderSettingsPreview()

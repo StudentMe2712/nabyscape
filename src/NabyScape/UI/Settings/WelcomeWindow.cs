@@ -65,7 +65,7 @@ internal sealed class WelcomeWindow : Window
                 var option=new RadioButton{Content=side,GroupName="Dock position",IsChecked=edge==side,Margin=new(0,10,16,14),Padding=new(6)};
                 UI.Named(option,"Dock position: "+side);option.Checked+=(_,_)=>{edge=side;edgeChanged=true;};edges.Children.Add(option);
             }
-            body.Children.Add(edges);body.Children.Add(UI.Text("Your widgets",16));
+            body.Children.Add(edges);body.Children.Add(UI.Text("Ваши виджеты",16));
             foreach(var choice in app.Settings.Widgets.Where(w=>purpose=="Custom" || widgets[w.Id]))
             {
                 var id=choice.Id;var toggle=new CheckBox{Content=Settings.Names.GetValueOrDefault(id)??id,IsChecked=widgets[id],Margin=new(0,12,0,3),Padding=new(6)};

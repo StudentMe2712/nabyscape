@@ -7,7 +7,7 @@ namespace NabyScape;
 // Never apply this to transcripts, user labels, filenames, provider IDs or persisted values.
 internal static class Localization
 {
-    internal static string Language { get; private set; } = "ru";
+    internal static string Language { get; set; } = "ru";
     internal static void Configure(Settings settings)
     {
         settings.NormalizeLanguageAccessibility();

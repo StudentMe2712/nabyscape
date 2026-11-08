@@ -49,9 +49,9 @@ internal static class SettingsGalleryDiagnostics
             string[] Sections()=>settingsPage.Children.OfType<Border>().Select(b=>b.Tag as string).Where(t=>t!=null).ToArray()!;
             Button Nav(string id)=>((System.Collections.Generic.Dictionary<string,Button>)typeof(SettingsWindow).GetField("navigationButtons",flags)!.GetValue(window)!)[id];
             navigate.Invoke(window,new object[]{"Appearance"});window.UpdateLayout();
-            check("Essentials: Look & colors shows shape and colors only",Sections().SequenceEqual(new[]{"Shape","Color & material"}));
+            check("Essentials: Цвета и тема shows shape and colors only",Sections().SequenceEqual(new[]{"Shape","Color & material"}));
             check("Essentials: detailed pages leave the sidebar",Nav("Motion").Visibility!=Visibility.Visible && Nav("Controls").Visibility!=Visibility.Visible && Nav("Appearance").Visibility==Visibility.Visible);
-            check("Essentials: a disclosure card offers every setting",Diagnostics.Descendants(settingsPage).OfType<Button>().Any(b=>AutomationProperties.GetAutomationId(b)=="Show all settings"));
+            check("Essentials: a disclosure card offers every setting",Diagnostics.Descendants(settingsPage).OfType<Button>().Any(b=>AutomationProperties.GetAutomationId(b)=="Показать все параметры" || AutomationProperties.GetAutomationId(b)=="Show all settings"));
             navigate.Invoke(window,new object[]{"Content"});window.UpdateLayout();
             check("Essentials: clipboard capture stays reachable from widgets",Sections().Contains("Clipboard history"));
             var open=typeof(SettingsWindow).GetMethod("OpenSettingsSearchResult",flags)!;
@@ -60,7 +60,7 @@ internal static class SettingsGalleryDiagnostics
             navigate.Invoke(window,new object[]{"Appearance"});window.UpdateLayout();
             check("Essentials: leaving a search result restores the essentials",Sections().Length==2);
             typeof(SettingsWindow).GetMethod("SetShowAllSettings",flags)!.Invoke(window,new object[]{true});window.UpdateLayout();
-            check("Show all: every Look & colors section returns",Sections().Contains("Typography") && Sections().Contains("Surface") && Nav("Motion").Visibility==Visibility.Visible && app.Settings.SettingsShowAll);
+            check("Show all: every Цвета и тема section returns",Sections().Contains("Typography") && Sections().Contains("Surface") && Nav("Motion").Visibility==Visibility.Visible && app.Settings.SettingsShowAll);
             typeof(SettingsWindow).GetMethod("SetShowAllSettings",flags)!.Invoke(window,new object[]{false});window.UpdateLayout();
             check("Show essentials only returns to the short page",Sections().Length==2 && !app.Settings.SettingsShowAll);
         }

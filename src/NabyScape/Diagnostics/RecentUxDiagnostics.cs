@@ -35,7 +35,7 @@ internal static class RecentUxDiagnostics
             }
             finally{installer.Close();}
             settings=new SettingsWindow(app){ShowActivated=false};settings.Show();await Task.Delay(200);settings.UpdateLayout();
-            check("Start here exposes five readiness statuses without API or microphone checks",Diagnostics.LogicalDescendants(settings).OfType<Border>().Any(b=>b.Tag as string=="Your setup") && Diagnostics.Descendants(settings).OfType<TextBlock>().Any(t=>t.Text.StartsWith("Voice ·")));Capture(settings,"settings-home-current");
+            check("Начало работы exposes five readiness statuses without API or microphone checks",Diagnostics.LogicalDescendants(settings).OfType<Border>().Any(b=>b.Tag as string=="Your setup") && Diagnostics.Descendants(settings).OfType<TextBlock>().Any(t=>t.Text.StartsWith("Voice ·")));Capture(settings,"settings-home-current");
             double original=app.Settings.Width;app.Settings.Width=original+24;Call(settings,"Save");await Task.Delay(500);
             var undo=Field<Button>(settings,"undoSettings");check("Undo offered after a saved layout edit",undo.Visibility==Visibility.Visible);undo.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));await Task.Delay(200);check("Undo restores live and persisted width",app.Settings.Width==original && app.Store.Load<Settings>("settings").Width==original);
             Diagnostics.NavigateSettings(settings,"Content");await Task.Delay(100);check("Feature usage is directly visible",Diagnostics.Descendants(settings).OfType<TextBlock>().Any(t=>t.Text=="Feature usage"));Capture(settings,"settings-widgets-current");

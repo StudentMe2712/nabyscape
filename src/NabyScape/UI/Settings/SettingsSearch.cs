@@ -79,10 +79,10 @@ public sealed partial class SettingsWindow
     }
     private void InitializeSettingsSearch(Grid main,Grid workspace,Border fieldHost)
     {
-        settingsSearchIndex=BuildSettingsSearchIndex();settingsSearch=UI.Input("Search settings","");settingsSearch.Background=Brushes.Transparent;settingsSearch.BorderThickness=new(0);settingsSearch.Margin=new(0);settingsSearch.Padding=new(0,6,0,6);settingsSearch.MinHeight=34;
+        settingsSearchIndex=BuildSettingsSearchIndex();settingsSearch=UI.Input("Поиск параметров","");settingsSearch.Background=Brushes.Transparent;settingsSearch.BorderThickness=new(0);settingsSearch.Margin=new(0);settingsSearch.Padding=new(0,6,0,6);settingsSearch.MinHeight=34;
         var row=new DockPanel();var glyph=Icons.Create("search",15,UI.Muted);glyph.Margin=new(0,0,10,0);DockPanel.SetDock(glyph,Dock.Left);row.Children.Add(glyph);
         var clear=Icons.Button("x","Clear settings search",()=>settingsSearch.Clear(),false,28);clear.Background=Brushes.Transparent;clear.Margin=new(5,0,0,0);clear.Visibility=Visibility.Collapsed;DockPanel.SetDock(clear,Dock.Right);row.Children.Add(clear);
-        var inputHost=new Grid();inputHost.Children.Add(settingsSearch);var hint=UI.Caption("Search  ·  Ctrl+F",12,UI.Muted);hint.IsHitTestVisible=false;inputHost.Children.Add(hint);row.Children.Add(inputHost);
+        var inputHost=new Grid();inputHost.Children.Add(settingsSearch);var hint=UI.Caption("Поиск · Ctrl+F",12,UI.Muted);hint.IsHitTestVisible=false;inputHost.Children.Add(hint);row.Children.Add(inputHost);
         var field=new Border{Child=row,Background=SettingsTheme.Card,BorderBrush=SettingsTheme.Line,BorderThickness=new(1),CornerRadius=new(10),Padding=new(12,0,6,0),Margin=new(0)};settingsSearchHeader=field;fieldHost.Child=field;
         var resultsScroll=UI.Scroll(settingsResults);resultsScroll.HorizontalScrollBarVisibility=ScrollBarVisibility.Disabled;
         searchResultsHost=new Border{Child=resultsScroll,Background=SettingsTheme.CardRaised,BorderBrush=SettingsTheme.Line,BorderThickness=new(1),CornerRadius=new(14),Padding=new(8),Margin=new(36,48,36,10),VerticalAlignment=VerticalAlignment.Top,Visibility=Visibility.Collapsed,Effect=new System.Windows.Media.Effects.DropShadowEffect{BlurRadius=28,ShadowDepth=8,Opacity=.5,Color=Colors.Black}};UI.LocalizedName(searchResultsHost,"Settings search results");Grid.SetRow(searchResultsHost,0);Panel.SetZIndex(searchResultsHost,40);main.Children.Add(searchResultsHost);

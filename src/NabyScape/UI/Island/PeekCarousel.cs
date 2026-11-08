@@ -20,7 +20,7 @@ public sealed partial class OverlayWindow
     private readonly Dictionary<string,FrameworkElement> peekViews=new();
     private readonly Dictionary<string,TranslateTransform> peekMoves=new();
     private readonly Dictionary<string,Button> peekDots=new();
-    private readonly TextBlock peekPageName=UI.Text("Music",10,UI.Muted);
+    private readonly TextBlock peekPageName=UI.Text("Музыка",10,UI.Muted);
     private readonly Dictionary<string,(TextBlock time,TextBlock detail,Button toggle,ProgressBar progress)> peekClocks=new();
     private readonly TextBlock peekEventTitle=UI.Text("",16),peekEventTime=UI.Text("",11,UI.Muted),peekShelfName=UI.Text("",14),peekShelfCount=UI.Text("",11,UI.Muted);
     private TextBox peekNote=null!;
@@ -54,7 +54,7 @@ public sealed partial class OverlayWindow
         if((fileDragActive || shelfDropBrowsing) && !ids.Contains("files"))ids=ids.Append("files").ToArray();
         return ids;
     }
-    private static string PeekName(string id)=>id=="media"?"Music":Settings.Names.GetValueOrDefault(id)??id;
+    private static string PeekName(string id)=>Settings.Names.GetValueOrDefault(id)??id;
     private bool peekInitialized;
     private void EnsurePeekDeck(){if(peekInitialized)return;peekInitialized=true;InitializePeekDeck();}
     private void InitializePeekDeck()

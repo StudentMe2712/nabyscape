@@ -67,7 +67,7 @@ internal static class Stage1Diagnostics
         var preview=Diagnostics.Descendants(settings).OfType<Expander>().Single(e=>AutomationProperties.GetName(e)=="Settings live preview");
         var form=Diagnostics.Descendants(settings).OfType<ScrollViewer>().Single(c=>AutomationProperties.GetName(c)=="Settings form viewport");
         Check("480x300 uses category chooser and collapsed preview with usable form",chooser.IsVisible && !preview.IsExpanded && form.ActualWidth>=300 && form.ActualHeight>=80);
-        var categories=new[]{("Appearance","Look & colors"),("Ambience","Ambience"),("Motion","Motion & speed"),("Layout","Position & size"),("Visibility","Show & hide"),("Controls","Controls"),("Content","Widgets & tools"),("Audio","Music & sound"),("Clipboard","Clipboard"),("Weather","Weather"),("System","Clock & system"),("Launch","Shortcuts"),("AI","Naby AI"),("Notifications","Notifications"),("Application","General")};
+        var categories=new[]{("Appearance","Цвета и тема"),("Ambience","Подсветка"),("Motion","Motion & speed"),("Layout","Позиция и размер"),("Visibility","Поведение и скрытие"),("Controls","Controls"),("Content","Виджеты и инструменты"),("Audio","Музыка и звук"),("Clipboard","Clipboard"),("Weather","Weather"),("System","Clock & system"),("Launch","Shortcuts"),("AI","Naby AI"),("Notifications","Уведомления"),("Application","Основные")};
         foreach(var (category,title) in categories)
         {chooser.SelectedItem=Localization.Text(title);settings.UpdateLayout();Check("compact category is reachable: "+category,Equals(chooser.SelectedItem,Localization.Text(title)) && Diagnostics.CurrentSettingsCategory(settings)==category && form.ExtentHeight>0 && form.ActualWidth>=300);}
         Capture(settings,"settings-480x300");
@@ -112,7 +112,7 @@ internal static class Stage1Diagnostics
         settings.Width=900;settings.Height=680;await Task.Delay(100);Check("narrow preview can be expanded",!preview.IsExpanded);preview.IsExpanded=true;settings.UpdateLayout();Check("expanded narrow preview leaves scrolling form",preview.IsExpanded && form.ActualHeight>=80);Capture(settings,"settings-narrow-preview");
         settings.Width=1100;settings.Height=780;await Task.Delay(100);settings.UpdateLayout();
         Check("wide Settings displays sidebar, form and preview",!chooser.IsVisible && preview.IsExpanded && form.ActualWidth>=300);Capture(settings,"settings-wide");
-        chooser.SelectedItem=Localization.Text("Widgets & tools");settings.UpdateLayout();Capture(settings,"widget-order");
+        chooser.SelectedItem=Localization.Text("Виджеты и инструменты");settings.UpdateLayout();Capture(settings,"widget-order");
     }
     private sealed class SettingsScope(SettingsWindow window):IDisposable
     {

@@ -250,8 +250,8 @@ public sealed partial class SettingsWindow : Window
         widgets.Children.Add(UI.Caption("Drag the grip to arrange your widgets. Switch any widget on or off.",11,UI.Muted));
         widgets.Children.Add(WidgetOrder(s.Widgets,"widgets",RefreshFeatureUsage));
         page.Children.Add(Section("Enabled widgets & order",widgets));
-        var focus=new StackPanel();AddSlider(focus,"Focus duration",s.FocusMinutes,1,240,v=>s.FocusMinutes=(int)v," min");AddSlider(focus,"Break duration",s.BreakMinutes,1,120,v=>s.BreakMinutes=(int)v," min");
-        focus.Children.Add(UI.Caption("New durations apply to the next session.",11,UI.Muted));page.Children.Add(Section("Focus sessions",focus));
+        var focus=new StackPanel();AddSlider(focus,"Длительность фокуса",s.FocusMinutes,1,240,v=>s.FocusMinutes=(int)v," мин");AddSlider(focus,"Длительность перерыва",s.BreakMinutes,1,120,v=>s.BreakMinutes=(int)v," мин");
+        focus.Children.Add(UI.Caption("New durations apply to the next session.",11,UI.Muted));page.Children.Add(Section("Сессии фокуса (Помодоро)",focus));
         HoverPageSettings();
     }
     private void Move<T>(System.Collections.Generic.List<T> list,int index,int delta)
@@ -328,7 +328,7 @@ public sealed partial class SettingsWindow : Window
         page.Children.Add(Section("Behavior",UI.CaptionButton("Open setup guide",app.ShowWelcome),startup,UI.Caption("Launch NabyScape for this Windows user when you sign in. You can turn this off at any time.",11,UI.Muted),UI.Caption("NabyScape keeps running when you close Settings. Quit from the system tray.",12,UI.Muted)));
         page.Children.Add(Section("Local storage",UI.Caption("Preferences and timers stay on this device. No account required.",12,UI.Muted),UI.CaptionButton("Open settings folder",()=>ShortcutService.Open(new(){Target=app.Store.DirectoryPath})),UI.CaptionButton("Uninstall NabyScape…",()=>{try{Installer.OpenUninstaller();}catch(Exception ex){app.Notify("Uninstall NabyScape",ex.Message);}}),UI.Caption("Uninstall can remove downloaded speech models, caches, history and saved connections too.",11,UI.Muted),UI.CaptionButton("Quit NabyScape",app.Quit)));
         var resetCategory=new ComboBox{ItemsSource=PreferenceReset.Categories.Where(pair=>pair.Value.Length>0).Select(pair=>CategoryTitle(pair.Key)).ToArray(),SelectedIndex=0};UI.LocalizedName(resetCategory,"Preference reset category");
-        page.Children.Add(Section("Reset preferences",UI.Text(PreferenceReset.Summary(null),11,UI.Muted),UI.Caption("Choose a category to reset only its preferences; for example Appearance keeps your current layout.",11,UI.Muted),resetCategory,UI.CaptionButton("Reset this category",()=>ResetPreferences(CategoryId(resetCategory.SelectedItem?.ToString()??"Look & colors"))),UI.CaptionButton("Reset all preferences",()=>ResetPreferences(null)),UI.CaptionButton("Restore last preference backup",RestorePreferences)));
+        page.Children.Add(Section("Reset preferences",UI.Text(PreferenceReset.Summary(null),11,UI.Muted),UI.Caption("Choose a category to reset only its preferences; for example Appearance keeps your current layout.",11,UI.Muted),resetCategory,UI.CaptionButton("Reset this category",()=>ResetPreferences(CategoryId(resetCategory.SelectedItem?.ToString()??"Цвета и тема"))),UI.CaptionButton("Reset all preferences",()=>ResetPreferences(null)),UI.CaptionButton("Restore last preference backup",RestorePreferences)));
         page.Children.Add(Section("About NabyScape",UI.Text("Version "+typeof(App).Assembly.GetName().Version!.ToString(3)+" · Windows · "+RuntimePlatform.Rid,14),UI.Caption("Media controls depend on support from your media app. Battery appears on devices with a battery. Transparency controls opacity; glass uses a dark gradient and reflections.",12,UI.Muted),UI.Caption("Focus sessions run in NabyScape and do not change Windows Do Not Disturb.",12,UI.Muted)));
     }
 }

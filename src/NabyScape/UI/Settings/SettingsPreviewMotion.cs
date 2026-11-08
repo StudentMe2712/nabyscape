@@ -106,7 +106,7 @@ public sealed partial class SettingsWindow
         else if(name.Contains("volume indicator",StringComparison.OrdinalIgnoreCase) || name=="Volume step"){previewMode="Closed";previewContent="Volume feedback";}
         else if(name.Contains("motion",StringComparison.OrdinalIgnoreCase) || name.Contains("activity",StringComparison.OrdinalIgnoreCase) || name=="Animation duration"){previewMode="Hover";previewContent="Music";}
         else if(name.Contains("hover",StringComparison.OrdinalIgnoreCase) || name=="Two-stage reveal" || name=="Swipe distance"){previewMode="Hover";}
-        else if(name.Contains("Focus duration",StringComparison.OrdinalIgnoreCase) || name.Contains("Break duration",StringComparison.OrdinalIgnoreCase)){previewMode="Panel";previewContent="Focus";}
+        else if(name.Contains("Focus duration",StringComparison.OrdinalIgnoreCase) || name.Contains("Break duration",StringComparison.OrdinalIgnoreCase) || name.Contains("Длительность фокуса",StringComparison.OrdinalIgnoreCase) || name.Contains("Длительность перерыва",StringComparison.OrdinalIgnoreCase)){previewMode="Panel";previewContent="Focus";}
         else if(name.Contains("Closed media",StringComparison.OrdinalIgnoreCase) || name.Contains("Closed island",StringComparison.OrdinalIgnoreCase)){previewMode="Closed";previewContent="Music";}
         else if(name.Contains("color",StringComparison.OrdinalIgnoreCase) || name.Contains("outline",StringComparison.OrdinalIgnoreCase) || name=="Control surfaces"){previewMode="Panel";previewContent="Control colors";}
         else if(name.Contains("clipboard",StringComparison.OrdinalIgnoreCase) || name.Contains("history",StringComparison.OrdinalIgnoreCase)){previewMode="Panel";previewContent="Smart clipboard";}

@@ -12,7 +12,7 @@ public sealed partial class OverlayWindow
         var p=app.Productivity;
         var count=UI.Caption("",11,UI.Muted);count.HorizontalAlignment=HorizontalAlignment.Right;
         void Summary(){int done=p.Tasks.Count(t=>t.Done);count.Text=p.Tasks.Count==0?"":Localization.Format("{0} open",p.Tasks.Count-done);UI.Named(count,Localization.Format("{0} of {1} tasks completed",done,p.Tasks.Count));}
-        Summary();var heading=new DockPanel{Margin=new(0,0,0,16)};DockPanel.SetDock(count,Dock.Right);heading.Children.Add(count);heading.Children.Add(UI.Heading(Localization.Text("Tasks"),18));toolsContent.Children.Add(heading);
+        Summary();var heading=new DockPanel{Margin=new(0,0,0,16)};DockPanel.SetDock(count,Dock.Right);heading.Children.Add(count);heading.Children.Add(UI.Heading(Localization.Text("Задачи"),18));toolsContent.Children.Add(heading);
         var list=new StackPanel();var viewport=UI.Scroll(list);viewport.Tag="panel-content-scroll";viewport.VerticalScrollBarVisibility=ScrollBarVisibility.Auto;viewport.HorizontalScrollBarVisibility=ScrollBarVisibility.Disabled;viewport.MaxHeight=Math.Clamp((app.Settings.PanelMaxHeight-180)/app.Settings.PanelScale,72,360);UI.Named(viewport,Localization.Text("Task list"));toolsContent.Children.Add(viewport);
         foreach(var item in p.Tasks.ToArray())
         {

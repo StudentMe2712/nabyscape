@@ -786,7 +786,7 @@ internal static class Diagnostics
 
             Check("Settings shape and color controls stay inside their reserved viewport",SettingsControlsFit());
 
-            Check("Settings navigation is English",settings.Title=="NabyScape · Settings" && new[]{"Look & colors","Widgets & tools","Controls","Shortcuts","General"}.All(label=>Descendants(settings).OfType<Button>().Any(b=>b.Content?.ToString()==label)));
+            Check("Settings navigation is localized",settings.Title==Localization.Text("NabyScape · Settings") && new[]{"Цвета и тема","Виджеты и инструменты","Основные"}.All(label=>Descendants(settings).OfType<TextBlock>().Any(t=>t.Text==label)));
 
             Descendants(settings).OfType<Button>().Single(b=>AutomationProperties.GetName(b)=="Island color color picker").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));settings.UpdateLayout();
 

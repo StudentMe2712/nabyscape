@@ -7,7 +7,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 namespace NabyScape;
 
-// Settings opens with the essentials of each page. "Show all settings" reveals every section
+// Settings opens with the essentials of each page. "Показать все параметры" reveals every section
 // and the detailed help text; search can still open any setting directly.
 public sealed partial class SettingsWindow
 {
@@ -18,14 +18,14 @@ public sealed partial class SettingsWindow
         ["Layout"]=new[]{"Display","Dock placement","Move & resize","Closed island"},
         ["Visibility"]=new[]{"Automatic tucking","Hide or show the island"},
         ["Controls"]=new[]{"Notch gestures","Global hotkey"},
-        ["Content"]=new[]{"Enabled widgets & order","Focus sessions","Clipboard history"},
+        ["Content"]=new[]{"Enabled widgets & order","Focus sessions","Clipboard history","Ваши виджеты","Сессии фокуса (Помодоро)"},
         ["Audio"]=new[]{"Closed media display","Lyrics"},
         ["Notifications"]=new[]{"Notifications","Other apps"},
         ["Application"]=new[]{"Language & accessibility","Behavior","Updates","Local storage","About NabyScape"},
         ["System"]=new[]{"Clock"},
         ["Launch"]=new[]{"Shortcuts"}
     };
-    // Detailed pages that only appear in the sidebar after "Show all settings".
+    // Detailed pages that only appear in the sidebar after "Показать все параметры".
     private static readonly HashSet<string> DetailedCategories=new(){"Motion","Controls","Clipboard","System"};
     private readonly Dictionary<string,TextBlock> navigationGroups=new();
     private CheckBox? showAllSwitch;
@@ -42,14 +42,14 @@ public sealed partial class SettingsWindow
             if(category.Group!=lastGroup)
             {
                 lastGroup=category.Group;
-                // "Start here" stands alone at the top; a "Settings" label above it repeats the window title.
+                // "Начало работы" stands alone at the top; a "Settings" label above it repeats the window title.
                 if(category.Group!="Settings"){var label=UI.Caption(category.Group,10,UI.Muted);label.Margin=new(14,10,0,4);label.FontFamily=SettingsTheme.Display;label.FontWeight=FontWeights.Bold;label.Text=label.Text.ToUpperInvariant();label.Foreground=SettingsTheme.Quiet;label.Opacity=.75;navigation.Children.Add(label);navigationGroups[category.Group]=label;}
             }
             var item=category;var button=UI.CaptionButton(item.Title,()=>Navigate(item.Id));button.HorizontalContentAlignment=HorizontalAlignment.Left;button.Content=NavigationContent(CategoryIcon(item.Id),Localization.Text(item.Title));button.Padding=new(12,6,12,6);button.Margin=new(0,1,0,1);button.Tag=new CornerRadius(9);button.FontSize=13;button.MinHeight=32;button.ToolTip=Localization.Text(item.Description);navigationButtons[item.Id]=button;navigation.Children.Add(button);
         }
-        var label2=new StackPanel();label2.Children.Add(UI.Caption("Show all settings",12));var hint=UI.Caption("Every option and its help text",10,UI.Muted);hint.Margin=new(0,3,0,0);label2.Children.Add(hint);
+        var label2=new StackPanel();label2.Children.Add(UI.Caption("Показать все параметры",12));var hint=UI.Caption("Every option and its help text",10,UI.Muted);hint.Margin=new(0,3,0,0);label2.Children.Add(hint);
         // Lives in the sidebar footer (see SidebarFooter).
-        showAllSwitch=new CheckBox{Content=label2,IsChecked=app.Settings.SettingsShowAll};UI.LocalizedName(showAllSwitch,"Show all settings");
+        showAllSwitch=new CheckBox{Content=label2,IsChecked=app.Settings.SettingsShowAll};UI.LocalizedName(showAllSwitch,"Показать все параметры");
         showAllSwitch.Click+=(_,_)=>SetShowAllSettings(showAllSwitch.IsChecked==true);
         RefreshNavigationMode();
     }
@@ -93,7 +93,7 @@ public sealed partial class SettingsWindow
     private Border DisclosureCard(bool showingAll,int detailed)
     {
         var row=new DockPanel();
-        var action=UI.CaptionButton(showingAll?"Show essentials only":"Show all settings",()=>SetShowAllSettings(!showingAll),!showingAll);action.VerticalAlignment=VerticalAlignment.Center;action.Margin=new(12,0,0,0);DockPanel.SetDock(action,Dock.Right);row.Children.Add(action);
+        var action=UI.CaptionButton(showingAll?"Показать только основные":"Показать все параметры",()=>SetShowAllSettings(!showingAll),!showingAll);action.VerticalAlignment=VerticalAlignment.Center;action.Margin=new(12,0,0,0);DockPanel.SetDock(action,Dock.Right);row.Children.Add(action);
         var text=new StackPanel{VerticalAlignment=VerticalAlignment.Center};
         text.Children.Add(UI.Caption(showingAll?"Showing all settings":"Showing the essentials",13));
         var detail=UI.Text(showingAll?Localization.Text("Detailed options and help text are visible on every page."):Localization.Format(detailed==1?"{0} more section with detailed options.":"{0} more sections with detailed options.",detailed),11,UI.Muted);detail.Margin=new(0,3,0,0);text.Children.Add(detail);
@@ -101,7 +101,7 @@ public sealed partial class SettingsWindow
         var card=new Border{Background=Brushes.Transparent,BorderBrush=SettingsTheme.Line,BorderThickness=new(.7),CornerRadius=new(12),Padding=new(16,12,12,12),Margin=new(0,0,0,15),Child=row};
         UI.LocalizedName(card,"Settings detail level");return card;
     }
-    // Essentials keep labels and controls; long explanations stay in tooltips and in "Show all settings".
+    // Essentials keep labels and controls; long explanations stay in tooltips and in "Показать все параметры".
     private static void PruneDetailedHelp(Border section)
     {
         foreach(var text in SettingTree(section).OfType<TextBlock>().ToArray())
