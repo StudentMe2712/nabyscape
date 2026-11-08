@@ -45,7 +45,7 @@ internal static class MediaFooterDiagnostics
         var dismiss=typeof(OverlayWindow).GetMethod("DismissMediaOrCollapse",flags)!;dismiss.Invoke(island,null);dismiss.Invoke(island,null);check("Duplicate external click notifications do not collapse the dock",!controls.IsOpen && island.IsExpanded);
 
         controls=Field<MediaControls>("mediaControls");Click(controls.SourceButton);await Task.Delay(30);Click(Diagnostics.Descendants(controls.Popover).OfType<Button>().Single(button=>AutomationProperties.GetName(button)=="Use media source None"));app.PublishUpdate(RuntimeChange.Media);
-        check("None clears selected media, artwork, title and timeline",app.Media.SourceDisabled && !app.Media.Available && !app.Media.Playing && app.Media.Artwork==null && app.Media.Title=="Nothing playing" && app.Media.Timeline()==(0d,0d));
+        check("None clears selected media, artwork, title and timeline",app.Media.SourceDisabled && !app.Media.Available && !app.Media.Playing && app.Media.Artwork==null && app.Media.Title=="Ничего не воспроизводится" && app.Media.Timeline()==(0d,0d));
         var savedTimer=app.Session.Timer;var savedFocus=app.Session.Focus;app.Session.Timer=new();app.Session.Focus=new();island.Collapse();app.PublishUpdate(RuntimeChange.Media);
         check("None restores idle without a stale cover or media waveform",!island.ClosedCoverVisible && !island.ClosedTitleWaveVisible && (bool)typeof(OverlayWindow).GetProperty("IdleContent",flags)!.GetValue(island)! && !app.AmbientAudio.Running);
         foreach(var widget in s.Widgets)if(widget.Id is "focus" or "timer")widget.Enabled=true;app.ChangeSettings();

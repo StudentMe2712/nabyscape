@@ -18,8 +18,8 @@ internal static class NotificationCenterText
         if(age<TimeSpan.FromDays(1))return Localization.Format("{0} h ago",(int)age.TotalHours);
         return at.ToLocalTime().ToString("dd MMM HH:mm",System.Globalization.CultureInfo.CurrentCulture);
     }
-    internal static string Kind(InternalNotice notice)=>notice.Kind=="external"?notice.Source??"App":Localization.Text(notice.Kind switch{"timer"=>"Timer","focus"=>"Focus","downloads"=>"Downloads","updates"=>"Update",_=>"NabyScape"});
-    internal static string Icon(string kind)=>kind switch{"timer"=>"timer","focus"=>"focus","downloads"=>"folder","updates"=>"settings",_=>"bell"};
+    internal static string Kind(InternalNotice notice)=>notice.Kind=="external"?notice.Source??"App":Localization.Text(notice.Kind switch{"timer"=>"Timer","focus"=>"Focus","downloads"=>"Downloads","updates"=>"Update","reset"=>"Перезагрузка",_=>"NabyScape"});
+    internal static string Icon(string kind)=>kind switch{"timer"=>"timer","focus"=>"focus","downloads"=>"folder","updates"=>"settings","reset"=>"activity",_=>"bell"};
 }
 
 // The notification center opens as an island popup listing this session's alerts, newest first.
@@ -46,7 +46,7 @@ public sealed partial class OverlayWindow
         // Header and actions stay put; only the list scrolls.
         var content=new Grid();for(int row=0;row<4;row++)content.RowDefinitions.Add(new(){Height=row==2?new GridLength(1,GridUnitType.Star):GridLength.Auto});
         var header=new DockPanel{Margin=new(0,0,0,4)};
-        centerClear=UI.CaptionButton("Clear all",()=>app.Notifications.ClearHistory());centerClear.FontSize=11;centerClear.MinHeight=28;centerClear.Padding=new(10,3,10,3);centerClear.VerticalAlignment=VerticalAlignment.Center;DockPanel.SetDock(centerClear,Dock.Right);header.Children.Add(centerClear);
+        centerClear=UI.CaptionButton("Очистить все",()=>app.Notifications.ClearHistory());centerClear.FontSize=11;centerClear.MinHeight=28;centerClear.Padding=new(10,3,10,3);centerClear.VerticalAlignment=VerticalAlignment.Center;DockPanel.SetDock(centerClear,Dock.Right);header.Children.Add(centerClear);
         var badge=new Border{Width=30,Height=30,CornerRadius=new(15),Background=UI.Brush("#19FFFFFF"),Margin=new(0,0,10,0),Child=Icons.Create("bell",15)};header.Children.Add(badge);
         var heading=UI.Heading(Localization.Text("Notifications"),17);heading.FontWeight=FontWeights.SemiBold;heading.VerticalAlignment=VerticalAlignment.Center;header.Children.Add(heading);
         content.Children.Add(header);

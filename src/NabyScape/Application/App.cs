@@ -207,7 +207,7 @@ public sealed partial class App : Application
         };
         tick.Start();CheckCountdowns();
         if(Store.Warning!=null) Notify("Settings recovered",Store.Warning);
-        if(!Array.Exists(e.Args,a=>a=="--background")) Notify("NabyScape is ready", "Click the island for your widgets. Right-click the tray icon for settings.");
+        if(!Array.Exists(e.Args,a=>a=="--background")) Notify("Second Self готов к работе", "Нажмите на островок для открытия виджетов. Нажмите правой кнопкой на значок в трее для перехода в настройки.");
         InitializeRuntimeRecovery();
         PrivateDiagnostics.SetServiceState(DiagnosticService.Application,DiagnosticServiceState.Ready);
         PrivateDiagnostics.Record(DiagnosticStage.Application,DiagnosticCode.Completed,startupClock.Elapsed);

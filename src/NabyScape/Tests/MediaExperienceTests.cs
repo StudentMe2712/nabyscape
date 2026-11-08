@@ -79,7 +79,7 @@ internal static class MediaExperienceTests
         test("None clears displayed media and timeline without sending playback commands",()=>
         {
             using var media=new MediaService(ex=>throw ex){DiagnosticFixture=true};media.DiagnosticPlayback(true);media.SelectNone();
-            Assert(media.SourceDisabled && !media.Available && !media.Playing && media.Artwork==null && media.Title=="Nothing playing" && !media.CanToggle && !media.CanSeek && media.Timeline()==(0d,0d));
+            Assert(media.SourceDisabled && !media.Available && !media.Playing && media.Artwork==null && media.Title=="Ничего не воспроизводится" && !media.CanToggle && !media.CanSeek && media.Timeline()==(0d,0d));
             media.SelectAutomatic();Assert(!media.SourceDisabled && media.Available && media.SourceSelectionId==MediaSourceSelection.AutoId);
         });
         test("Legacy tool order expands in place and keeps disabled choices",()=>

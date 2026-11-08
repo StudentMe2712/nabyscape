@@ -22,6 +22,7 @@
     <StartupObject>NabyScape.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.14" />
     <PackageReference Include="System.Management" Version="10.0.0" />
     <PackageReference Include="System.Speech" Version="10.0.13" />
     <PackageReference Include="NAudio" Version="2.2.1" />
@@ -46,5 +47,9 @@
     <EmbeddedResource Include="..\..\licenses\ROMAJI-ThirdPartyNotices.txt" LogicalName="NabyScape.ROMAJI-ThirdPartyNotices.txt" />
     <EmbeddedResource Include="..\..\licenses\LYRICS-LANGUAGE-LICENSE.txt" LogicalName="NabyScape.LYRICS-LANGUAGE-LICENSE.txt" />
     <EmbeddedResource Include="Assets\lyrics-languages.profile.xml.gz" LogicalName="NabyScape.LyricsLanguages" />
+    <None Update="..\..\Videos\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Videos\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </None>
   </ItemGroup>
 </Project>

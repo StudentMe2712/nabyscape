@@ -57,9 +57,18 @@ public sealed partial class OverlayWindow
     private void InitializeAssistantIsland(Grid header)
     {
         header.ColumnDefinitions.Add(new(){Width=GridLength.Auto});Grid.SetColumn(assistantHeaderSpace,5);header.Children.Add(assistantHeaderSpace);
-        assistantCharacterHost.HorizontalAlignment=HorizontalAlignment.Center;assistantCharacterHost.VerticalAlignment=VerticalAlignment.Center;
-        closedAssistant.HorizontalAlignment=HorizontalAlignment.Center;closedAssistant.VerticalAlignment=VerticalAlignment.Center;
-        assistantCharacterButton=AssistantOrb.Launcher("AI character on island",()=>{if(expanded)Collapse();else{LeaveAssistantPanel();Reveal();}},closedAssistant);assistantCharacterButton.MinHeight=24;assistantCharacterButton.Margin=new Thickness(0);assistantCharacterButton.HorizontalAlignment=HorizontalAlignment.Center;assistantCharacterButton.VerticalAlignment=VerticalAlignment.Center;assistantCharacterButton.ToolTip="Naby · click to open · Esc to close";
+        assistantCharacterHost.HorizontalAlignment=HorizontalAlignment.Center;
+        assistantCharacterHost.VerticalAlignment=VerticalAlignment.Top;
+        assistantCharacterHost.Height=app.Settings.Height;
+        assistantCharacterHost.Width=ClosedContentWidth;
+        closedAssistant.HorizontalAlignment=HorizontalAlignment.Center;
+        closedAssistant.VerticalAlignment=VerticalAlignment.Center;
+        assistantCharacterButton=AssistantOrb.Launcher("AI character on island",()=>{if(expanded)Collapse();else{LeaveAssistantPanel();Reveal();}},closedAssistant);
+        assistantCharacterButton.MinHeight=24;
+        assistantCharacterButton.Margin=new Thickness(0);
+        assistantCharacterButton.HorizontalAlignment=HorizontalAlignment.Center;
+        assistantCharacterButton.VerticalAlignment=VerticalAlignment.Center;
+        assistantCharacterButton.ToolTip="Naby · click to open · Esc to close";
         assistantCharacterButton.MouseEnter+=(_,_)=>{hoverDelay.Stop();};
         assistantCharacterButton.MouseLeave+=(_,_)=>assistantHover.Stop();
         assistantCharacterButton.PreviewMouseLeftButtonDown+=(_,_)=>assistantHover.Stop();
@@ -115,7 +124,14 @@ public sealed partial class OverlayWindow
         assistantCharacterButton.ToolTip=app.Assistant.VoiceConnected?"Microphone on · click for voice controls":app.Assistant.WakeListening?app.Assistant.WakeStatus:app.Assistant.Desktop.Sharing?"Screen sharing on · click for controls":"AI companion · hover to meet · click to chat";
         double size=Math.Clamp(app.Settings.Height-4,24,32);assistantCharacterButton.MinHeight=size;assistantCharacterButton.Width=assistantCharacterButton.Height=size;closedAssistant.Width=closedAssistant.Height=size;
         assistantHeaderSpace.Width=size+9;assistantHeaderSpace.Visibility=enabled && !FeedbackVisible?Visibility.Visible:Visibility.Collapsed;
-        assistantCharacterHost.Width=ClosedContentWidth;assistantCharacterHost.Height=app.Settings.Height;
+        assistantCharacterHost.HorizontalAlignment=HorizontalAlignment.Center;
+        assistantCharacterHost.VerticalAlignment=VerticalAlignment.Top;
+        assistantCharacterHost.Width=ClosedContentWidth;
+        assistantCharacterHost.Height=app.Settings.Height;
+        closedAssistant.HorizontalAlignment=HorizontalAlignment.Center;
+        closedAssistant.VerticalAlignment=VerticalAlignment.Center;
+        assistantCharacterButton.HorizontalAlignment=HorizontalAlignment.Center;
+        assistantCharacterButton.VerticalAlignment=VerticalAlignment.Center;
         SyncAssistantVisibility();
         RefreshAssistantVisuals();RefreshIdleDock();
     }

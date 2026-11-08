@@ -40,8 +40,17 @@ public sealed partial class OverlayWindow
     }
     internal bool IsPeeking=>peeking;
     internal string ActivePage=>activePage;
-    private static string PageFor(string widget)=>widget switch{"media"=>"media","timer"=>"timer","focus"=>"focus","system"=>"system","notes"=>"notes","tasks"=>"tasks",_=>"media"};
-    private static string PageName(string page)=>page switch{"media"=>"Музыка","timer"=>"Таймер","focus"=>"Фокус","system"=>"Система","notes"=>"Заметки","tasks"=>"Задачи",_=>Localization.Text(page)};
+    private static string PageFor(string widget)=>widget switch{"tasks"=>"tasks","reset"=>"reset","media"=>"media","focus"=>"focus","timer"=>"timer","notes"=>"notes","system"=>"system",_=>"media"};
+    private static string PageName(string page)=>page switch{
+        "tasks"=>"Фокус дня",
+        "reset"=>"Перезагрузка",
+        "media"=>"Музыка",
+        "focus"=>"Фокус",
+        "timer"=>"Таймер",
+        "notes"=>"Заметки",
+        "system"=>"Система",
+        _=>Localization.Text(page)
+    };
     private string? hoverPanelWidget;
     private bool WidgetOn(string id)=>id==hoverPanelWidget || app.Settings.Widgets.Any(w=>w.Enabled && w.Id==id);
     private IEnumerable<WidgetSetting> PanelWidgets=>app.Settings.Widgets.Where(w=>w.Enabled || w.Id==hoverPanelWidget);
@@ -195,10 +204,12 @@ public sealed partial class OverlayWindow
         Dimensions();
         if(expanded){motion.Go(surface,IslandSurface.SurfaceWidthProperty,expandedWidth,Math.Min(300,app.Settings.AnimationMs));motion.Go(surface,IslandSurface.SurfaceHeightProperty,expandedHeight,Math.Min(300,app.Settings.AnimationMs));motion.OnComplete(()=>{});}
     }
+    private FrameworkElement BuildDailyResetPage() => new DailyResetView(app);
     private FrameworkElement BuildCompactPage(string page)
     {
         switch(page)
         {
+            case "reset": return BuildDailyResetPage();
             case "timer": return new CountdownView(app, false);
             case "focus": return new CountdownView(app, true);
             case "system": return BuildSystemMonitor();
@@ -223,9 +234,12 @@ public sealed partial class OverlayWindow
                     var info=new StackPanel{VerticalAlignment=VerticalAlignment.Center};title.TextWrapping=TextWrapping.NoWrap;title.TextTrimming=TextTrimming.CharacterEllipsis;artist.TextWrapping=TextWrapping.NoWrap;artist.TextTrimming=TextTrimming.CharacterEllipsis;artist.Margin=new(0,4,0,0);info.Children.Add(WrapTitle(title));info.Children.Add(WrapTitle(artist));
                     var cover=new Border{Child=WrapArtwork(artwork),Width=88,Height=88,Margin=new(0,0,20,0),Clip=new RectangleGeometry(new Rect(0,0,88,88),15,15)};
                     var row=new Grid{Margin=new(0,0,0,6)};row.ColumnDefinitions.Add(new(){Width=GridLength.Auto});row.ColumnDefinitions.Add(new());row.Children.Add(cover);
-                    previous=Icons.Button("previous",Localization.Text("Previous track"),()=>_=app.Media.Command("previous"),false,38);play=Icons.Button("play",Localization.Text("Play or pause"),()=>_=app.Media.Command("toggle"),true,46);playIcon="";next=Icons.Button("next",Localization.Text("Next track"),()=>_=app.Media.Command("next"),false,38);previous.Background=next.Background=Brushes.Transparent;
+                    previous=Icons.Button("previous","Предыдущий трек",()=>_=app.Media.Command("previous"),false,38);previous.ToolTip="Предыдущий трек";
+                    play=Icons.Button("play","Воспроизведение или пауза",()=>_=app.Media.Command("toggle"),true,46);play.ToolTip="Воспроизведение / Пауза";playIcon="";
+                    next=Icons.Button("next","Следующий трек",()=>_=app.Media.Command("next"),false,38);next.ToolTip="Следующий трек";
+                    previous.Background=next.Background=Brushes.Transparent;
                     previous.Margin=new(0,0,8,0);play.Margin=new(0);next.Margin=new(8,0,0,0);
-                    lyricsButton=Icons.Button("lyrics",Localization.Text("Show or hide synced lyrics"),ToggleLyrics,false,28);lyricsButton.Margin=new(16,0,0,0);lyricsButton.Background=Brushes.Transparent;
+                    lyricsButton=Icons.Button("lyrics","Текст песни",ToggleLyrics,false,28);lyricsButton.ToolTip="Текст песни";lyricsButton.Margin=new(16,0,0,0);lyricsButton.Background=Brushes.Transparent;
                     var buttons=UI.Row(previous,play,next);buttons.HorizontalAlignment=HorizontalAlignment.Center;var playbackRow=new Grid{Margin=new(0)};playbackRow.Children.Add(buttons);lyricsButton.HorizontalAlignment=HorizontalAlignment.Right;lyricsButton.VerticalAlignment=VerticalAlignment.Center;lyricsButton.Margin=new(0);playbackRow.Children.Add(lyricsButton);
                     Grid.SetColumn(info,1);row.Children.Add(info);panel.Children.Add(row);panel.Children.Add(playbackRow);row.Loaded+=(_,_)=>QueueMediaLayout();row.IsVisibleChanged+=(_,_)=>{if(row.IsVisible)QueueMediaLayout();};
                     row.SizeChanged+=(_,_)=>{bool narrow=row.ActualWidth<310;double size=narrow?64:88;cover.Width=cover.Height=artwork.Width=artwork.Height=size;cover.Margin=new(0,0,narrow?14:20,0);if(previousArtwork.TryGetValue(artwork,out var outgoing))outgoing.Width=outgoing.Height=size;musicWave.Width=narrow?112:164;cover.Clip=new RectangleGeometry(new Rect(0,0,size,size),narrow?11:15,narrow?11:15);previous.Width=previous.Height=next.Width=next.Height=narrow?28:38;play.Width=play.Height=narrow?38:46;title.FontSize=narrow?15:18;previous.Margin=new(0,0,narrow?2:8,0);next.Margin=new(narrow?2:8,0,0,0);};
