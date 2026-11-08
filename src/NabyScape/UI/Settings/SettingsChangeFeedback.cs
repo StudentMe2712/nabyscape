@@ -12,12 +12,12 @@ internal static class SettingsChangeFeedback
 {
     private static readonly Dictionary<string,string> Labels=new()
     {
-        ["CoverAmbient"]="Ambient light",["ClosedAmbient"]="Closed dock ambience",
-        ["AmbientStrength"]="Ambient intensity",["AutoCheckUpdates"]="Automatic update checks",
-        ["AutoDownloadUpdates"]="Automatic update downloads",["Width"]="Closed dock width",
-        ["Height"]="Closed dock height",["TuckEdge"]="Tucked edge height",["Widgets"]="Widgets & order",
-        ["HoverViews"]="Hover pages",["Tools"]="Tools & order",["Shortcuts"]="Shortcuts",
-        ["Performance"]="Animation performance",["AutoStart"]="Start with Windows",["SettingsShowAll"]="Показать все параметры"
+        ["CoverAmbient"]="Фоновая подсветка",["ClosedAmbient"]="Подсветка свёрнутого островка",
+        ["AmbientStrength"]="Интенсивность подсветки",["AutoCheckUpdates"]="Автопроверка обновлений",
+        ["AutoDownloadUpdates"]="Автозагрузка обновлений",["Width"]="Ширина островка",
+        ["Height"]="Высота островка",["TuckEdge"]="Высота спрятанной кромки",["Widgets"]="Виджеты и порядок",
+        ["HoverViews"]="Страницы наведения",["Tools"]="Инструменты",["Shortcuts"]="Ярлыки",
+        ["Performance"]="Производительность",["AutoStart"]="Автозапуск с Windows",["SettingsShowAll"]="Показать все параметры"
     };
     internal static string Describe(JsonElement before,Settings settings)
     {
@@ -28,12 +28,12 @@ internal static class SettingsChangeFeedback
             string label=Labels.GetValueOrDefault(property.Name)??Regex.Replace(property.Name,"(?<=[a-z0-9])([A-Z])"," $1");
             string value=property.Value.ValueKind switch
             {
-                JsonValueKind.True=>Localization.Text("On"),JsonValueKind.False=>Localization.Text("Off"),
+                JsonValueKind.True=>Localization.Text("Вкл."),JsonValueKind.False=>Localization.Text("Откл."),
                 JsonValueKind.Number=>property.Name=="AmbientStrength"?(property.Value.GetDouble()*100).ToString("0")+"%":property.Value.GetRawText(),
                 _=>""
             };
-            changes.Add(Localization.Text(label)+(value.Length>0?": "+value:" updated"));
+            changes.Add(Localization.Text(label)+(value.Length>0?": "+value:" обновлено"));
         }
-        return changes.Count==0?"Saved on this device.":"Saved · "+string.Join(" · ",changes.Take(3))+(changes.Count>3?" · +"+(changes.Count-3)+" more":"");
+        return changes.Count==0?"Сохранено на этом устройстве.":"Сохранено · "+string.Join(" · ",changes.Take(3))+(changes.Count>3?" · ещё +"+(changes.Count-3):"");
     }
 }

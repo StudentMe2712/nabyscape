@@ -11,15 +11,15 @@ public sealed partial class SettingsWindow
 {
     private static readonly SettingsCategory[] SettingsCategories=
     {
-        new("Home","Начало работы","Settings","Make NabyScape work the way you want.","home start setup help beginner"),
-        new("Appearance","Цвета и тема","Personalize","Choose the dock's shape, colors and text style.","appearance theme warna tampilan font shape glass",new[]{"Shape","Settings material","Color & material","Surface","Controls & outlines","Typography","Text and navigation"}),
-        new("Ambience","Подсветка","Personalize","Choose where the light appears and how it follows your music.","ambient ambience cahaya warna glow spread softness light reach closed dock tertutup",new[]{"Ambient light"}),
-        new("Layout","Позиция и размер","Dock","Place the dock on a screen edge or move it freely.","position posisi pindah atas bawah kanan kiri monitor size resize ukuran"),
-        new("Visibility","Поведение и скрытие","Dock","Choose when the dock hides, tucks away or shows a preview.","hide show tuck sembunyi tutup youtube fullscreen maximized hover preview",new[]{"Automatic tucking","Manual tuck shortcut","Hide or show the island","Automatic activity"}),
+        new("Home","Начало работы","Settings","Настройте NabyScape под свои предпочтения.","home start setup help beginner"),
+        new("Appearance","Цвета и тема","Personalize","Форма островка, цвета, материалы и шрифт.","appearance theme warna tampilan font shape glass",new[]{"Shape","Settings material","Color & material","Surface","Controls & outlines","Typography","Text and navigation"}),
+        new("Ambience","Подсветка","Personalize","Свечение вокруг островка и реакция на музыку.","ambient ambience cahaya warna glow spread softness light reach closed dock tertutup",new[]{"Ambient light"}),
+        new("Layout","Позиция и размер","Dock","Кромка экрана, положение и размеры островка.","position posisi pindah atas bawah kanan kiri monitor size resize ukuran"),
+        new("Visibility","Поведение и скрытие","Dock","Скрытие при перекрытии окнами и поведение у кромки.","hide show tuck sembunyi tutup youtube fullscreen maximized hover preview",new[]{"Automatic tucking","Manual tuck shortcut","Hide or show the island","Automatic activity"}),
         new("Content","Виджеты и инструменты","Features","Включение, сортировка и настройка сессий фокуса.","widget tools urutan notes task timer focus stopwatch pomodoro"),
-        new("Audio","Музыка и звук","Features","Customize music controls, lyrics and the audio visualizer.","music spotify volume musik suara waveform spectrum lirik lyrics audio microphone"),
-        new("Notifications","Уведомления","App","Choose which alerts appear, their sounds and quiet hours.","notifications notif pemberitahuan alert sound bunyi quiet hours downloads other apps claude telegram windows",new[]{"Notifications","Other apps","Notification presentation","Downloads","Completion sound"}),
-        new("Application","Основные","App","Manage startup, updates, local data and app preferences.","general startup update version install storage data reset backup mulai windows")
+        new("Audio","Музыка и звук","Features","Плеер, текст песен и аудиовизуализатор.","music spotify volume musik suara waveform spectrum lirik lyrics audio"),
+        new("Notifications","Уведомления","App","Оповещения, звуки и тихие часы.","notifications notif pemberitahuan alert sound bunyi quiet hours downloads other apps claude telegram windows",new[]{"Notifications","Other apps","Notification presentation","Downloads","Completion sound"}),
+        new("Application","Основные","App","Автозапуск, данные, сброс настроек и обновления.","general startup update version install storage data reset backup mulai windows")
     };
     private static SettingsCategory Category(string id)=>SettingsCategories.FirstOrDefault(c=>c.Id==id)??SettingsCategories[0];
     private static string CategoryTitle(string id)=>Localization.Text(Category(id).Title);
@@ -27,7 +27,7 @@ public sealed partial class SettingsWindow
     private static string SettingsRoot(string id)=>id switch{"Ambience"=>"Appearance","Visibility"=>"Controls","Notifications"=>"Application",_=>id};
     private static string FriendlySection(string title)=>title switch
     {
-        "Shape"=>"Dock shape","Color & material"=>"Colors","Settings material"=>"Settings window","Surface"=>"Glass appearance","Controls & outlines"=>"Buttons & input fields","Typography"=>"Text weight","Text and navigation"=>"Panel dots","Animation performance"=>"Smoothness & power","Display"=>"Screen","Closed island"=>"Compact dock","Open panel"=>"Expanded dock","Enabled widgets & order"=>"Ваши виджеты","Your widgets"=>"Ваши виджеты","Focus sessions"=>"Сессии фокуса (Помодоро)","Notch gestures"=>"Mouse actions","Global hotkey"=>"Open dock shortcut","Automatic activity"=>"Automatic previews","Clipboard history"=>"Clipboard capture","Completion sound"=>"Timer & focus sound",_=>title
+        "Shape"=>"Форма островка","Color & material"=>"Цвета","Settings material"=>"Окно настроек","Surface"=>"Стекло и поверхность","Controls & outlines"=>"Кнопки и поля ввода","Typography"=>"Шрифт и начертание","Text and navigation"=>"Индикаторы страниц","Animation performance"=>"Плавность и производительность","Display"=>"Экран","Closed island"=>"Компактный островок","Open panel"=>"Раскрытая панель","Enabled widgets & order"=>"Ваши виджеты","Your widgets"=>"Ваши виджеты","Focus sessions"=>"Сессии фокуса (Помодоро)","Notch gestures"=>"Действия мыши","Global hotkey"=>"Горячая клавиша открытия","Automatic activity"=>"Автоматические превью","Clipboard history"=>"История буфера обмена","Completion sound"=>"Звук завершения",_=>title
     };
     private void FilterSettingsCategory(string id)
     {
@@ -40,9 +40,5 @@ public sealed partial class SettingsWindow
         }
         if(definition.Sections!=null)foreach(var note in page.Children.OfType<TextBlock>().Skip(1).ToArray())page.Children.Remove(note);
         var retained=page.Children.OfType<Border>().Select(b=>b.Tag as string).ToHashSet();settingExamples.RemoveAll(scene=>!retained.Contains(scene.Section));
-    }
-    private void WeatherSettingsPage()
-    {
-        page.Children.Add(new Border{Child=new WeatherView(app,true),Background=UI.Brush("#16191F"),BorderBrush=UI.Brush("#2A2F39"),BorderThickness=new(.7),CornerRadius=new(14),Padding=new(16),Margin=new(0,0,0,16)});
     }
 }

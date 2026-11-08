@@ -47,7 +47,7 @@ public sealed partial class SettingsWindow
             }
             var item=category;var button=UI.CaptionButton(item.Title,()=>Navigate(item.Id));button.HorizontalContentAlignment=HorizontalAlignment.Left;button.Content=NavigationContent(CategoryIcon(item.Id),Localization.Text(item.Title));button.Padding=new(12,6,12,6);button.Margin=new(0,1,0,1);button.Tag=new CornerRadius(9);button.FontSize=13;button.MinHeight=32;button.ToolTip=Localization.Text(item.Description);navigationButtons[item.Id]=button;navigation.Children.Add(button);
         }
-        var label2=new StackPanel();label2.Children.Add(UI.Caption("Показать все параметры",12));var hint=UI.Caption("Every option and its help text",10,UI.Muted);hint.Margin=new(0,3,0,0);label2.Children.Add(hint);
+        var label2=new StackPanel();label2.Children.Add(UI.Caption("Показать все параметры",12));var hint=UI.Caption("Все разделы и подробные пояснения к параметрам",10,UI.Muted);hint.Margin=new(0,3,0,0);label2.Children.Add(hint);
         // Lives in the sidebar footer (see SidebarFooter).
         showAllSwitch=new CheckBox{Content=label2,IsChecked=app.Settings.SettingsShowAll};UI.LocalizedName(showAllSwitch,"Показать все параметры");
         showAllSwitch.Click+=(_,_)=>SetShowAllSettings(showAllSwitch.IsChecked==true);
@@ -95,11 +95,11 @@ public sealed partial class SettingsWindow
         var row=new DockPanel();
         var action=UI.CaptionButton(showingAll?"Показать только основные":"Показать все параметры",()=>SetShowAllSettings(!showingAll),!showingAll);action.VerticalAlignment=VerticalAlignment.Center;action.Margin=new(12,0,0,0);DockPanel.SetDock(action,Dock.Right);row.Children.Add(action);
         var text=new StackPanel{VerticalAlignment=VerticalAlignment.Center};
-        text.Children.Add(UI.Caption(showingAll?"Showing all settings":"Showing the essentials",13));
-        var detail=UI.Text(showingAll?Localization.Text("Detailed options and help text are visible on every page."):Localization.Format(detailed==1?"{0} more section with detailed options.":"{0} more sections with detailed options.",detailed),11,UI.Muted);detail.Margin=new(0,3,0,0);text.Children.Add(detail);
+        text.Children.Add(UI.Caption(showingAll?"Все параметры":"Основные параметры",13));
+        var detail=UI.Text(showingAll?"Отображаются все разделы и подробные подсказки.":Localization.Format(detailed==1?"Доступен еще {0} дополнительный раздел.":"Доступно еще {0} дополнительных разделов.",detailed),11,UI.Muted);detail.Margin=new(0,3,0,0);text.Children.Add(detail);
         row.Children.Add(text);
         var card=new Border{Background=Brushes.Transparent,BorderBrush=SettingsTheme.Line,BorderThickness=new(.7),CornerRadius=new(12),Padding=new(16,12,12,12),Margin=new(0,0,0,15),Child=row};
-        UI.LocalizedName(card,"Settings detail level");return card;
+        UI.LocalizedName(card,"Уровень детализации настроек");return card;
     }
     // Essentials keep labels and controls; long explanations stay in tooltips and in "Показать все параметры".
     private static void PruneDetailedHelp(Border section)
@@ -117,6 +117,6 @@ public sealed partial class SettingsWindow
             text.Visibility=Visibility.Collapsed;
         }
         foreach(var expander in SettingTree(section).OfType<Expander>().ToArray())
-            if(expander.Header is string header && header.StartsWith(Localization.Text("More details"),StringComparison.Ordinal))expander.Visibility=Visibility.Collapsed;
+            if(expander.Header is string header && (header.StartsWith("Подробнее",StringComparison.Ordinal) || header.StartsWith(Localization.Text("More details"),StringComparison.Ordinal)))expander.Visibility=Visibility.Collapsed;
     }
 }

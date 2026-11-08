@@ -27,7 +27,7 @@ public sealed partial class SettingsWindow
     private string livePreviewKey="";
     private void InitializePreviewMotion(StackPanel column)
     {
-        var replay=UI.Button("Replay transition",async()=>
+        var replay=UI.Button("Повторить переход",async()=>
         {
             if(previewReplaying)return;previewReplaying=true;string previous=previewMode;
             try{foreach(string mode in new[]{"Closed","Hover","Panel"}){if(previewClosed)return;previewMode=mode;RefreshPreview();await System.Threading.Tasks.Task.Delay(Math.Max(500,(int)app.Settings.AnimationMs+180));}}
@@ -94,7 +94,6 @@ public sealed partial class SettingsWindow
         if(name=="Show ambience on closed dock"){previewMode="Closed";previewContent="Music";}
         else if(name.EndsWith(" tool")){previewMode="Hover";previewContent=name[..^5] switch{"File shelf"=>"Shelf","Notes"=>"Note","Clipboard"=>"Smart clipboard","Tasks"=>"Tasks","Calendar"=>"Calendar",_=>"Tools"};}
         else if(current=="Ambience"){previewMode="Panel";previewContent="Music";}
-        else if(current=="AI"){previewMode="Panel";previewContent="AI";}
         else if(current=="Application"){previewMode="Panel";previewContent="Startup";}
         else if(name.Contains("Tuck",StringComparison.OrdinalIgnoreCase)){previewMode="Panel";previewContent="Visibility";}
         else if(name=="Swipe between open panels"){previewMode="Panel";previewContent="Panel navigation";}

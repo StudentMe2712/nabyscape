@@ -13,16 +13,16 @@ public sealed partial class SettingsWindow
         var codes = new[] { "ru", "en", "es", "id" };
         var language = new ComboBox { ItemsSource = new[] { "Русский", "English", "Español", "Bahasa Indonesia" },
             SelectedIndex = Math.Max(0, Array.IndexOf(codes, settings.UiLanguage)) };
-        UI.LocalizedName(language, "Interface language");
+        UI.LocalizedName(language, "Язык интерфейса");
         var scale = new ComboBox { ItemsSource = new[] { "100%", "110%", "125%", "150%" } };
         var sizes = new[] { 1d, 1.1, 1.25, 1.5 };
         scale.SelectedIndex = Array.FindIndex(sizes, value => value >= settings.AccessibilityTextScale);
-        UI.LocalizedName(scale, "Text size");
-        var contrast = new CheckBox { Content = UI.Caption("High contrast"), IsChecked = settings.AccessibilityHighContrast };
-        UI.LocalizedName(contrast, "High contrast");
-        var notice = UI.Caption("Save these preferences, then quit and reopen NabyScape to apply them.", 12, UI.Muted);
+        UI.LocalizedName(scale, "Размер текста");
+        var contrast = new CheckBox { Content = UI.Caption("Высокая контрастность"), IsChecked = settings.AccessibilityHighContrast };
+        UI.LocalizedName(contrast, "Высокая контрастность");
+        var notice = UI.Caption("Сохраните настройки, затем перезапустите NabyScape для их применения.", 12, UI.Muted);
         Accessibility.Live(notice);
-        var save = UI.CaptionButton("Save language and accessibility", () =>
+        var save = UI.CaptionButton("Сохранить параметры", () =>
         {
             var previous = (settings.UiLanguage, settings.AccessibilityTextScale, settings.AccessibilityHighContrast);
             settings.UiLanguage = codes[Math.Max(0, language.SelectedIndex)];
@@ -31,23 +31,22 @@ public sealed partial class SettingsWindow
             settings.NormalizeLanguageAccessibility();
             try
             {
-                // ChangeSettings logs persistence failures internally; this explicit write must succeed before announcing success.
                 app.Store.Save("settings", settings);
                 app.ChangeSettings();
-                Accessibility.Announce(notice, Localization.Text("Saved. Quit and reopen NabyScape to apply language, text size and contrast."));
+                Accessibility.Announce(notice, Localization.Text("Сохранено. Перезапустите NabyScape для применения настроек языка и масштаба текста."));
             }
             catch (Exception ex)
             {
                 (settings.UiLanguage, settings.AccessibilityTextScale, settings.AccessibilityHighContrast) = previous;
                 app.Store.Log(ex);
-                Accessibility.Announce(notice, Localization.Text("Could not save changes. Try again."));
+                Accessibility.Announce(notice, Localization.Text("Не удалось сохранить изменения. Попробуйте снова."));
             }
         }, true);
-        page.Children.Add(Section("Language & accessibility", UI.Caption("Interface language", 12), language,
-            UI.Caption("English is used when a translation is unavailable. Your content stays in its original language.", 11, UI.Muted),
-            UI.Caption("Text size", 12), scale, contrast,
-            UI.Caption("Windows high contrast is always respected. Larger text may require scrolling in compact widgets.", 11, UI.Muted),
-            Check("Reduce motion", settings.ReduceMotion, value => settings.ReduceMotion = value),
-            UI.Caption("Motion also follows the Windows animation setting.", 11, UI.Muted), save, notice));
+        page.Children.Add(Section("Язык и доступность", UI.Caption("Язык интерфейса", 12), language,
+            UI.Caption("Русский язык установлен по умолчанию. Ваши пользовательские заметки сохраняются без изменений.", 11, UI.Muted),
+            UI.Caption("Размер текста", 12), scale, contrast,
+            UI.Caption("Высокая контрастность Windows поддерживается автоматически. Увеличенный текст может потребовать прокрутки.", 11, UI.Muted),
+            Check("Уменьшить движение", settings.ReduceMotion, value => settings.ReduceMotion = value),
+            UI.Caption("Анимации также согласуются с системными настройками Windows.", 11, UI.Muted), save, notice));
     }
 }

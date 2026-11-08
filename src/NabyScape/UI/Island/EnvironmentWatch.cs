@@ -25,9 +25,8 @@ public sealed partial class OverlayWindow
     internal void QueueEnvironmentCheck(){if(displayRecoveryDisposed)return;environmentDebounce.Stop();environmentDebounce.Start();}
     private void ConfigureEnvironmentWatch()
     {
-        bool wanted=EnvironmentRulesActive && !DiagnosticRun;
-        if(wanted==(foregroundHook!=IntPtr.Zero))return;
-        if(!wanted){StopEnvironmentWatch();return;}
+        if(DiagnosticRun)return;
+        if(foregroundHook!=IntPtr.Zero)return;
         environmentCallback??=EnvironmentEvent;
         foregroundHook=SetWinEventHook(EventForeground,EventForeground,IntPtr.Zero,environmentCallback,0,0,OutOfContextSkipOwnProcess);
         minimizeHook=SetWinEventHook(EventMinimizeStart,EventMinimizeEnd,IntPtr.Zero,environmentCallback,0,0,OutOfContextSkipOwnProcess);
@@ -38,6 +37,7 @@ public sealed partial class OverlayWindow
         // Location changes fire for every moving window and caret; only the active window's frame matters.
         if(idObject!=0 || idChild!=0)return;
         if(eventType==EventLocationChange && hwnd!=Native.GetForegroundWindow())return;
+        Dispatcher.BeginInvoke(CheckDesktopMode);
         QueueEnvironmentCheck();
     }
     private void StopEnvironmentWatch()

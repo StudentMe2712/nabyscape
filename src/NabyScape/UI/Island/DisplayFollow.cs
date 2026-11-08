@@ -45,7 +45,7 @@ public sealed partial class OverlayWindow
     private System.Drawing.Point followStart,followTarget;
     private double followDuration;
     private readonly MonitorFollowPolicy followPolicy=new();
-    private readonly DispatcherTimer pointerCheck=new(){Interval=TimeSpan.FromMilliseconds(100)};
+    private readonly DispatcherTimer pointerCheck=new(){Interval=TimeSpan.FromMilliseconds(80)};
     private Forms.Screen IslandScreen=>Native.ChooseScreen(app.Settings);
     private void InitializeDisplayFollow()
     {
@@ -58,21 +58,63 @@ public sealed partial class OverlayWindow
             if(t>=1){StopFollowSlide();Position();}
         };
         Closed+=(_,_)=>{followSlide.Stop();pointerCheck.Stop();};
-        pointerCheck.Tick+=(_,_)=>{ResolveFollow();TrackAssistantPointer();CheckHiddenTuckEdge();};
+        pointerCheck.Tick+=(_,_)=>{CheckDesktopMode();CheckDesktopEdgePeek();ResolveFollow();TrackAssistantPointer();CheckHiddenTuckEdge();};
         IsVisibleChanged+=(_,_)=>ConfigureDisplayFollow();
         app.SettingsChanged+=ConfigureDisplayFollow;
         ConfigureDisplayFollow();
+        if(!DiagnosticRun)pointerCheck.Start();
     }
     private void ConfigureDisplayFollow()
     {
         if(app.Settings.DisplayMode!="Follow"){StopFollowSlide();Native.FollowMonitor=null;}
-        if(userHidden || !IsVisible || (app.Settings.DisplayMode!="Follow" && !AssistantPointerTracking && !HiddenTuckHover))
+        if(userHidden || DiagnosticRun)
         {
             pointerCheck.Stop();followPolicy.Reset();
             if(app.Settings.DisplayMode!="Follow"){StopFollowSlide();Native.FollowMonitor=null;}
             return;
         }
-        if(!pointerCheck.IsEnabled){followPolicy.Reset();ResolveFollow(true);pointerCheck.Start();}
+        if(!pointerCheck.IsEnabled){followPolicy.Reset();pointerCheck.Start();}
+    }
+    private void CheckDesktopMode()
+    {
+        if(DiagnosticRun || userHidden || hwnd==IntPtr.Zero)return;
+        bool isDesktop=Native.IsDesktopForeground(hwnd);
+        if(!isDesktop)
+        {
+            if(Visibility!=Visibility.Collapsed)
+            {
+                if(expanded || peeking)Collapse();
+                Visibility=Visibility.Collapsed;
+            }
+        }
+        else
+        {
+            if(Visibility!=Visibility.Visible)
+            {
+                Visibility=Visibility.Visible;
+                Position();
+            }
+        }
+    }
+    private void CheckDesktopEdgePeek()
+    {
+        if(DiagnosticRun || userHidden || !IsVisible || expanded || hwnd==IntPtr.Zero)return;
+        if(!Native.CursorPoint(out var pt))return;
+        var screen=IslandScreen;double scale=Native.Scale(screen);var b=app.Settings.DockEdge=="Top"?screen.Bounds:screen.WorkingArea;
+        double width=app.Settings.Width*scale;
+        double centerX=b.Left+(b.Width-width)*app.Settings.Horizontal/100+width/2;
+        bool atTopEdge=pt.Y<=b.Top+4*scale && Math.Abs(pt.X-centerX)<=width/2;
+        double pillHeight=app.Settings.Height*scale;
+        bool overPill=pt.Y>=b.Top && pt.Y<=b.Top+pillHeight+8*scale && Math.Abs(pt.X-centerX)<=width/2+10;
+        bool inside=atTopEdge || overPill || PointerInside() || IsMouseOver;
+        if(tucked)
+        {
+            if(atTopEdge)SetTucked(false);
+        }
+        else
+        {
+            if(!inside)SetTucked(true);
+        }
     }
     private bool HiddenTuckHover=>IsTucked && app.Settings.TuckEdge==0 && !userHidden;
     private void CheckHiddenTuckEdge()

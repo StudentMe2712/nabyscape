@@ -7,7 +7,7 @@ using System.Windows.Controls;
 namespace NabyScape;
 public sealed partial class SettingsWindow
 {
-    private readonly Button undoSettings=UI.CaptionButton("Undo",()=>{});
+    private readonly Button undoSettings=UI.CaptionButton("Отменить",()=>{});
     private readonly Dictionary<string,JsonElement> undoValues=new();
     private static readonly HashSet<string> UndoKeys=new(("Preset Width Height Radius Top Horizontal DockEdge DockVertical DockInset Monitor DisplayMode Background Accent Opacity SettingsMaterial GlassStyle GlassStrength CoverAmbient ClosedAmbient AmbientStrength AmbientSpread AmbientMotion AmbientScope AmbientWidgets AmbientColorSource AmbientCustomColor AmbientSecondaryColor AmbientPalette AmbientDirection AmbientHeight AmbientBalance AmbientSoftness AmbientAudioResponse AmbientSensitivity AlbumAccent ControlFill ControlBorder SelectionFill PanelWidth PanelMaxHeight PanelPadding PanelScale SectionGap HoverWidth HoverHeight AnimationMs ReduceMotion LiveActivity ClosedMediaIcon ClosedMediaContent Performance CategoryStyle LaunchStyle BoldMediaTitle BoldHeadings Widgets Tools HoverViews HoverFollowsWidgets").Split(' '));
     private void CaptureSettingsUndo(JsonElement before)
@@ -15,10 +15,9 @@ public sealed partial class SettingsWindow
         var after=JsonSerializer.SerializeToElement(app.Settings);var changes=new Dictionary<string,JsonElement>();
         foreach(string key in UndoKeys)
             if(before.TryGetProperty(key,out var old) && after.TryGetProperty(key,out var next) && old.GetRawText()!=next.GetRawText())changes[key]=old.Clone();
-        // Window placement and other unrelated saves must not erase the last visual Undo.
         if(changes.Count==0)return;
         undoValues.Clear();foreach(var item in changes)undoValues[item.Key]=item.Value;
-        undoSettings.Visibility=Visibility.Visible;undoSettings.ToolTip="Undo the last saved appearance, layout or widget change. Saved content, connections and background permissions are preserved.";
+        undoSettings.Visibility=Visibility.Visible;undoSettings.ToolTip="Отменить последнее изменение внешнего вида, разметки или виджетов.";
     }
     private void UndoSettings()
     {
@@ -32,11 +31,11 @@ public sealed partial class SettingsWindow
                 if(property?.CanWrite==true)property.SetValue(app.Settings,JsonSerializer.Deserialize(item.Value.GetRawText(),property.PropertyType));
             }
             app.ChangeSettings();
-            if(!app.SettingsSaveSucceeded){SetSaveFeedback("Undo is active for this session but could not be saved. Choose Retry save.",true);return;}
+            if(!app.SettingsSaveSucceeded){SetSaveFeedback("Отмена действует для текущей сессии, но не была сохранена.",true);return;}
             savedSettings=JsonSerializer.SerializeToElement(app.Settings);undoValues.Clear();undoSettings.Visibility=Visibility.Collapsed;
-            if(current!="AI")Navigate(current);SetSaveFeedback("Undone · your previous appearance, layout or widget choices are saved.");
+            Navigate(current);SetSaveFeedback("Действие отменено · предыдущие параметры восстановлены.");
         }
-        catch(Exception ex){app.Store.Log(ex);SetSaveFeedback("Could not undo this change. Choose Retry save.",true);}
+        catch(Exception ex){app.Store.Log(ex);SetSaveFeedback("Не удалось отменить изменение.",true);}
         finally{applyingSettings=false;}
     }
 }

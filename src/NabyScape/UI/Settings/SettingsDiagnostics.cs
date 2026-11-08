@@ -18,35 +18,35 @@ public sealed partial class SettingsWindow
             VerticalScrollBarVisibility=ScrollBarVisibility.Auto,MinHeight=180,MaxHeight=320,
             Text=PrivateDiagnostics.CreateReport(app.Store)
         };
-        UI.LocalizedName(preview,"Private diagnostics report preview");
-        var notice=UI.Caption("Review the preview before copying or exporting. Nothing is uploaded automatically.",11,UI.Muted);
+        UI.LocalizedName(preview,"Предпросмотр отчёта диагностики");
+        var notice=UI.Caption("Ознакомьтесь с отчётом перед копированием или экспортом. Никакие данные не отправляются автоматически.",11,UI.Muted);
         Accessibility.Live(notice);
-        var refresh=UI.CaptionButton("Refresh diagnostics preview",()=>
+        var refresh=UI.CaptionButton("Обновить предпросмотр",()=>
         {
             preview.Text=PrivateDiagnostics.CreateReport(app.Store);
-            Accessibility.Announce(notice,Localization.Text("Diagnostics preview refreshed."));
+            Accessibility.Announce(notice,Localization.Text("Предпросмотр диагностики обновлён."));
         });
-        var copy=UI.CaptionButton("Copy diagnostics report",()=>
+        var copy=UI.CaptionButton("Скопировать отчёт",()=>
         {
             try
             {
                 Clipboard.SetText(preview.Text);
-                Accessibility.Announce(notice,Localization.Text("Diagnostics report copied."));
+                Accessibility.Announce(notice,Localization.Text("Отчёт диагностики скопирован в буфер обмена."));
             }
             catch(Exception ex)
             {
                 PrivateDiagnostics.Record(DiagnosticStage.DiagnosticsCopy,PrivateDiagnostics.Classify(ex));
-                Accessibility.Announce(notice,Localization.Text("Could not copy the report. Try again."));
+                Accessibility.Announce(notice,Localization.Text("Не удалось скопировать отчёт. Попробуйте снова."));
             }
         });
-        var export=UI.CaptionButton("Export diagnostics report",()=>
+        var export=UI.CaptionButton("Экспортировать отчёт",()=>
         {
             try
             {
                 var dialog=new SaveFileDialog
                 {
-                    Title=Localization.Text("Export diagnostics report"),
-                    Filter=Localization.Text("JSON report (*.json)|*.json"),DefaultExt=".json",AddExtension=true,
+                    Title=Localization.Text("Экспортировать отчёт диагностики"),
+                    Filter=Localization.Text("Отчёт JSON (*.json)|*.json"),DefaultExt=".json",AddExtension=true,
                     FileName="NabyScape-diagnostics.json",OverwritePrompt=true,CheckPathExists=true
                 };
                 if(dialog.ShowDialog(this)!=true)return;
@@ -55,19 +55,19 @@ public sealed partial class SettingsWindow
                     var bytes=new UTF8Encoding(false).GetBytes(preview.Text);
                     stream.Write(bytes,0,bytes.Length);stream.Flush(true);
                 }
-                Accessibility.Announce(notice,Localization.Text("Diagnostics report exported."));
+                Accessibility.Announce(notice,Localization.Text("Отчёт диагностики успешно экспортирован."));
             }
             catch(Exception ex)
             {
                 PrivateDiagnostics.Record(DiagnosticStage.DiagnosticsExport,PrivateDiagnostics.Classify(ex));
-                Accessibility.Announce(notice,Localization.Text("Could not export the report. Try another location."));
+                Accessibility.Announce(notice,Localization.Text("Не удалось экспортировать отчёт. Выберите другую папку."));
             }
         });
-        page.Children.Add(Section("Private diagnostics",
-            UI.Caption("Includes app and runtime versions, architecture, coarse storage and service status, and up to 64 controlled diagnostic events. No usernames, paths, endpoints, models, device names, keys, conversations, screenshots, audio or saved profile content are included.",11,UI.Muted),
-            UI.Caption("The existing local errors.log may contain private details and is never included in this report.",11,UI.Muted),
+        page.Children.Add(Section("Конфиденциальная диагностика",
+            UI.Caption("Включает версии приложения и среды, архитектуру, статус хранилища и до 64 последних событий диагностики. Имена пользователей, пути, персональные ключи, аудио или скриншоты никогда не включаются.",11,UI.Muted),
+            UI.Caption("Локальный файл errors.log может содержать подробные данные и никогда не включается в данный отчёт.",11,UI.Muted),
             preview,refresh,copy,export,notice,
-            UI.Caption("Storage recovery",13),
-            UI.Caption("When a document is unreadable or from a newer version, it stays protected from automatic saves. Temporary defaults may be shown. Quit NabyScape and preserve the original JSON file and its matching .schema.json sidecar before recovery. Use a compatible app version, or restore a known-good matching document and schema backup. For a legacy backup without a sidecar, preserve and move aside the current sidecar too. Keep the original and migration backup until recovery is verified. Reset preferences does not unlock protected documents.",11,UI.Muted)));
+            UI.Caption("Восстановление хранилища",13),
+            UI.Caption("Если документ настроек повреждён, он защищается от автоматической перезаписи. Для восстановления закройте NabyScape и сохраните оригинальный JSON файл перед откатом на резервную копию.",11,UI.Muted)));
     }
 }

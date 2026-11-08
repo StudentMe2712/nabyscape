@@ -21,7 +21,7 @@ public sealed partial class App
     internal void ShowHermesSettings(){ShowSettings();settingsWindow?.OpenAiHermesSettings();}
     internal void ShowVoiceSettings()
     {
-        ShowSettings();settingsWindow?.OpenAiVoiceSettings();
+        ShowSettings();
     }
     internal void HideAssistant(){Assistant?.StopSession();assistantWindow?.Hide();}
 }

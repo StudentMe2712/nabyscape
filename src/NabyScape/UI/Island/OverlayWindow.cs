@@ -68,7 +68,7 @@ public sealed partial class OverlayWindow : Window
         foreach(var number in new[]{clock,compactClock,idleDate,cpu,ram})Typography.SetNumeralAlignment(number,FontNumeralAlignment.Tabular);
         title.FontWeight=FontWeights.SemiBold;clock.FontWeight=compactClock.FontWeight=FontWeights.Bold;
         Typography.SetNumeralAlignment(compactClock,FontNumeralAlignment.Tabular);
-        SourceInitialized+=(_,_)=> {hwnd=new WindowInteropHelper(this).Handle;Native.SetWindowLong(hwnd,-20,Native.GetWindowLong(hwnd,-20)|0x80);HwndSource.FromHwnd(hwnd)?.AddHook(WindowMessage);ApplySettings();};
+        SourceInitialized+=(_,_)=> {hwnd=new WindowInteropHelper(this).Handle;Native.SetWindowLong(hwnd,-20,Native.GetWindowLong(hwnd,-20)|0x80);HwndSource.FromHwnd(hwnd)?.AddHook(WindowMessage);ApplySettings();SetTucked(true);};
         SizeChanged+=(_,_)=>Position();
         IsVisibleChanged+=(_,_)=>{if(!IsVisible)InvalidateSystemMonitor();};
         PreviewKeyDown+=(_,e)=> {if(e.Key==Key.Escape && mediaControls?.Close()==true){e.Handled=true;return;}if(dockEditing){if(e.Key==Key.Escape){foreach(var grip in new[]{moveGrip,resizeLeft,resizeRight})if(grip.IsDragging)grip.CancelDrag();e.Handled=true;}return;}if(e.Key==Key.K && Keyboard.Modifiers==ModifierKeys.Control){ShowCommands();e.Handled=true;}else if(e.Key==Key.Escape){if(assistantOpen || assistantPeeking){app.Assistant.StopSession();CloseAssistant();}else if(commandOpen)CloseCommands();else Collapse();e.Handled=true;}};
@@ -169,6 +169,7 @@ public sealed partial class OverlayWindow : Window
                 case "volume":
                     UI.Named(volume,"Windows volume");volume.Margin=new(12,0,10,0);mute=Icons.Button("volume","Mute or unmute",()=> {app.Audio.ToggleMute();Update();},false,30);mute.Background=Brushes.Transparent;mute.Padding=new(4);mute.Margin=new(0);muteIcon="";
                     var audioOutput=UI.Button("",OpenAudioMenu);audioOutput.Content=volumeText;audioOutput.MinHeight=28;audioOutput.Padding=new(5);UI.Named(audioOutput,"Audio devices and microphone");var audioRow=new DockPanel();DockPanel.SetDock(mute,Dock.Left);audioRow.Children.Add(mute);DockPanel.SetDock(audioOutput,Dock.Right);audioRow.Children.Add(audioOutput);audioRow.Children.Add(volume);card=UI.Card("Volume",audioRow);break;
+                case "reset":card=UI.Card("Перезагрузка",new DailyResetView(app));break;
                 case "voice":card=UI.Card("Voice companion",new AssistantVoiceView(app));break;
                 case "stopwatch":card=UI.Card("Stopwatch",new StopwatchView(app));break;
                 case "timer":small=true;card=UI.Card(Localization.Text("Timer"),new CountdownView(app,false,false));break;

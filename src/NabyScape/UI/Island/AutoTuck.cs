@@ -49,8 +49,9 @@ public sealed partial class OverlayWindow
         double destination=0,destinationX=0;
         if(value)
         {
-            if(app.Settings.DockEdge is "Left" or "Right")destinationX=(app.Settings.Width-app.Settings.TuckEdge)*(app.Settings.DockEdge=="Left"?-1:1);
-            else destination=AutoTuckPolicy.Offset(app.Settings.Height,app.Settings.TuckEdge)*(app.Settings.DockEdge=="Bottom"?-1:1);
+            double edge=Math.Min(app.Settings.TuckEdge,2);
+            if(app.Settings.DockEdge is "Left" or "Right")destinationX=(app.Settings.Width-edge)*(app.Settings.DockEdge=="Left"?-1:1);
+            else destination=AutoTuckPolicy.Offset(app.Settings.Height,edge)*(app.Settings.DockEdge=="Bottom"?-1:1);
         }
         // Manual hide must cancel an in-flight reveal even when its destination is already zero.
         if(userHidden){tuckDestination=destination;tuckDestinationX=destinationX;tuckMotion.Dispose();tuckSlide.X=destinationX;tuckSlide.Y=destination;return;}
@@ -74,8 +75,8 @@ public sealed partial class OverlayWindow
     internal void RevealTuckedPreview()
     {
         if(!AutoTuckPolicy.CanHover(userHidden,TuckRequested,tucked))return;
-        SetTucked(false);Position();tuckPreview=true;
-        try{if(!fileDragActive && app.Assistant.VoiceConnected && app.Assistant.Options.IslandCharacter)PreviewAssistant();else PreviewActivity();}finally{tuckPreview=false;}
+        tuckPreview=true;
+        try{SetTucked(false);Position();}finally{tuckPreview=false;}
     }
 }
 

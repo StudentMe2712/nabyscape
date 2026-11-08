@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Interop;
 using Forms=System.Windows.Forms;
@@ -117,7 +119,28 @@ internal static class Native
         if(hwnd==own || !IsExternalWindow(hwnd) || !GetWindowRect(hwnd,out var r))return false;
         var b=screen.Bounds;return r.Left<=b.Left && r.Top<=b.Top && r.Right>=b.Right && r.Bottom>=b.Bottom;
     }
-    [DllImport("user32.dll",CharSet=CharSet.Unicode)] private static extern int GetClassName(IntPtr hwnd,System.Text.StringBuilder text,int max);
+    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    internal static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+    internal static bool IsDesktopForeground(IntPtr ownHwnd)
+    {
+        var fg = GetForegroundWindow();
+        if (fg == IntPtr.Zero) return false;
+        try
+        {
+            if (fg == ownHwnd || (System.Windows.Application.Current != null && System.Windows.Application.Current.Windows.Cast<Window>().Any(w =>
+            {
+                try { return new WindowInteropHelper(w).Handle == fg; } catch { return false; }
+            }))) return true;
+        }
+        catch { }
+        if (fg == GetShellWindow()) return true;
+        var sb = new StringBuilder(128);
+        GetClassName(fg, sb, 128);
+        string cls = sb.ToString();
+        return cls is "Progman" or "WorkerW";
+    }
+
     [DllImport("dwmapi.dll")] private static extern int DwmSetWindowAttribute(IntPtr hwnd,int attribute,ref int value,int size);
     internal static void DarkTitleBar(Window window)
     {var handle=new WindowInteropHelper(window).Handle;int dark=1;DwmSetWindowAttribute(handle,20,ref dark,sizeof(int));}
