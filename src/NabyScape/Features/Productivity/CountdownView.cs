@@ -46,8 +46,8 @@ internal sealed class CountdownView : StackPanel
             VerticalContentAlignment = VerticalAlignment.Center,
             FontSize = 15,
             FontWeight = FontWeights.Medium,
-            Foreground = Brushes.White,
-            CaretBrush = Brushes.White,
+            Foreground = UI.Brush("#F2E9DF"),
+            CaretBrush = UI.Brush("#E58A43"),
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
             MaxLength = focus ? 3 : 4
@@ -61,8 +61,8 @@ internal sealed class CountdownView : StackPanel
             VerticalContentAlignment = VerticalAlignment.Center,
             FontSize = 15,
             FontWeight = FontWeights.Medium,
-            Foreground = Brushes.White,
-            CaretBrush = Brushes.White,
+            Foreground = UI.Brush("#F2E9DF"),
+            CaretBrush = UI.Brush("#E58A43"),
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
             MaxLength = 2
@@ -76,8 +76,8 @@ internal sealed class CountdownView : StackPanel
             VerticalContentAlignment = VerticalAlignment.Center,
             FontSize = 15,
             FontWeight = FontWeights.Medium,
-            Foreground = Brushes.White,
-            CaretBrush = Brushes.White,
+            Foreground = UI.Brush("#F2E9DF"),
+            CaretBrush = UI.Brush("#E58A43"),
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
             MaxLength = 3
@@ -202,7 +202,7 @@ internal sealed class CountdownView : StackPanel
         reset=UI.CaptionButton("Reset",()=>{State.Reset();app.SaveSession();});UI.Named(reset,Localization.Text(focus?"Reset focus":"Reset timer"));AutomationProperties.SetAutomationId(reset,id+"-reset");
         var actions=new StackPanel{Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Center,Margin=new(0,0,0,18)};
         foreach(var button in new[]{primary,reset}){button.Width=button.Height=36;button.MinHeight=36;button.Margin=new(0);button.Padding=new(9);button.Tag=new CornerRadius(18);button.ToolTip="Tab to select; Space or Enter to activate";}
-        primary.Margin=new(0,0,12,0);reset.Background=Brushes.Transparent;reset.Foreground=UI.Muted;reset.BorderThickness=new(1);reset.BorderBrush=UI.Brush("#3C4048");reset.Content=Icons.Create("reset",17,UI.Muted);actions.Children.Add(primary);actions.Children.Add(reset);Children.Add(actions);
+        primary.Margin=new(0,0,12,0);reset.Background=Brushes.Transparent;reset.Foreground=UI.Muted;reset.BorderThickness=new(1);reset.BorderBrush=UI.Brush("#252321");reset.Content=Icons.Create("reset",17,UI.Muted);actions.Children.Add(primary);actions.Children.Add(reset);Children.Add(actions);
         Children.Add(fieldsContainer);hint.MinHeight=20;hint.Margin=new(0,10,0,0);hint.VerticalAlignment=VerticalAlignment.Top;Children.Add(hint);
 
         static void BindInput(TextBox input, Action onBlur)
@@ -305,16 +305,16 @@ internal sealed class CountdownView : StackPanel
         input.Height = height;
         var border = new Border
         {
-            Background = UI.Brush("#16181D"),
-            BorderBrush = UI.Brush("#30343B"),
+            Background = UI.Brush("#252321"),
+            BorderBrush = UI.Brush("#252321"),
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(8),
             Child = input
         };
         if (!double.IsNaN(width)) border.Width = width;
         border.Height = height;
-        input.GotKeyboardFocus += (_, _) => border.BorderBrush = UI.Brush("#4F535C");
-        input.LostKeyboardFocus += (_, _) => border.BorderBrush = UI.Brush("#30343B");
+        input.GotKeyboardFocus += (_, _) => border.BorderBrush = UI.Brush("#E58A43");
+        input.LostKeyboardFocus += (_, _) => border.BorderBrush = UI.Brush("#252321");
         return border;
     }
 
@@ -391,7 +391,7 @@ internal sealed class CountdownView : StackPanel
         digits.Text=active || completed?state.Display(now):Countdown.FormatSeconds(valid?seconds:0);
         Accessibility.Announce(status,Localization.Text(active?(state.Running?(focus?(state.Phase=="break"?"Break":"Focusing"):"Running"):"Paused"):completed?"Complete":"Ready"));
         string action=state.Running?"Pause":active?"Resume":"Start";
-        if(AutomationProperties.GetItemStatus(primary)!=action){primary.Content=Icons.Create(state.Running?"pause":"play",17,Brushes.Black);AutomationProperties.SetItemStatus(primary,action);}
+        if(AutomationProperties.GetItemStatus(primary)!=action){primary.Content=Icons.Create(state.Running?"pause":"play",17,UI.Brush("#101113"));AutomationProperties.SetItemStatus(primary,action);}
         AutomationProperties.SetName(primary,Localization.Text(state.Running?(focus?"Pause focus":"Pause timer"):active?(focus?"Resume focus":"Resume timer"):(focus?"Start focus":"Start")));
         primary.IsEnabled=active || valid;reset.IsEnabled=active || completed;
         minutes.IsEnabled=breaks.IsEnabled=timerSeconds.IsEnabled=!active;

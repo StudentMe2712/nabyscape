@@ -27,8 +27,27 @@ internal sealed class DailyResetPlayerWindow : Window
         this.onCompleted = onCompleted;
 
         Title = "Перезагрузка дня";
-        Width = 1024;
-        Height = 720;
+
+        double screenWidth = SystemParameters.WorkArea.Width;
+        double screenHeight = SystemParameters.WorkArea.Height;
+        if (screenWidth <= 0 || screenHeight <= 0)
+        {
+            var screen = System.Windows.Forms.Screen.PrimaryScreen ?? System.Windows.Forms.Screen.AllScreens[0];
+            screenWidth = screen.WorkingArea.Width;
+            screenHeight = screen.WorkingArea.Height;
+        }
+
+        if (screenWidth >= 1920 && screenHeight >= 1080)
+        {
+            Width = 1920;
+            Height = 1080;
+        }
+        else
+        {
+            Width = Math.Min(1600, screenWidth > 0 ? screenWidth : 1600);
+            Height = Math.Min(900, screenHeight > 0 ? screenHeight : 900);
+        }
+
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
         WindowStyle = WindowStyle.None;
         AllowsTransparency = true;
@@ -38,8 +57,8 @@ internal sealed class DailyResetPlayerWindow : Window
 
         var rootBorder = new Border
         {
-            Background = UI.Brush("#121418"),
-            BorderBrush = UI.Brush("#2A2E38"),
+            Background = UI.Brush("#101113"),
+            BorderBrush = UI.Brush("#252321"),
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(16),
             ClipToBounds = true
@@ -47,8 +66,8 @@ internal sealed class DailyResetPlayerWindow : Window
 
         var mainGrid = new Grid();
         mainGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(56) }); // Header
-        mainGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(530) }); // Video
-        mainGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) }); // Bottom bar
+        mainGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) }); // Video
+        mainGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Bottom bar
         rootBorder.Child = mainGrid;
         Content = rootBorder;
 
@@ -63,8 +82,9 @@ internal sealed class DailyResetPlayerWindow : Window
         backButton.Padding = new Thickness(12, 6, 12, 6);
         backButton.HorizontalAlignment = HorizontalAlignment.Left;
         backButton.VerticalAlignment = VerticalAlignment.Center;
-        backButton.Background = UI.Brush("#1C2028");
-        backButton.BorderBrush = UI.Brush("#2A2E38");
+        backButton.Background = UI.Brush("#252321");
+        backButton.Foreground = UI.Brush("#F2E9DF");
+        backButton.BorderBrush = UI.Brush("#252321");
         backButton.BorderThickness = new Thickness(1);
         backButton.FontSize = 13;
         backButton.FontWeight = FontWeights.Medium;
@@ -72,7 +92,7 @@ internal sealed class DailyResetPlayerWindow : Window
 
         var title = UI.Heading("Перезагрузка дня", 18);
         title.FontWeight = FontWeights.SemiBold;
-        title.Foreground = UI.Brush("#F0EDE8");
+        title.Foreground = UI.Brush("#F2E9DF");
         title.HorizontalAlignment = HorizontalAlignment.Center;
         title.VerticalAlignment = VerticalAlignment.Center;
         header.Children.Add(title);
@@ -82,16 +102,24 @@ internal sealed class DailyResetPlayerWindow : Window
             var playlistWin = new DailyResetPlaylistWindow { Owner = this };
             playlistWin.Show();
         }, false, 32);
+        settingsButton.Content = Icons.Create("settings", 16, UI.Brush("#F2E9DF"));
         settingsButton.HorizontalAlignment = HorizontalAlignment.Right;
         settingsButton.VerticalAlignment = VerticalAlignment.Center;
-        settingsButton.Background = Brushes.Transparent;
+        settingsButton.Background = UI.Brush("#252321");
+        settingsButton.Foreground = UI.Brush("#F2E9DF");
+        settingsButton.BorderBrush = UI.Brush("#252321");
+        settingsButton.BorderThickness = new Thickness(1);
         settingsButton.Margin = new Thickness(0, 0, 40, 0);
         header.Children.Add(settingsButton);
 
         var closeButton = Icons.Button("x", "Закрыть", Close, false, 32);
+        closeButton.Content = Icons.Create("x", 16, UI.Brush("#F2E9DF"));
         closeButton.HorizontalAlignment = HorizontalAlignment.Right;
         closeButton.VerticalAlignment = VerticalAlignment.Center;
-        closeButton.Background = Brushes.Transparent;
+        closeButton.Background = UI.Brush("#252321");
+        closeButton.Foreground = UI.Brush("#F2E9DF");
+        closeButton.BorderBrush = UI.Brush("#252321");
+        closeButton.BorderThickness = new Thickness(1);
         header.Children.Add(closeButton);
 
         Grid.SetRow(header, 0);
@@ -103,20 +131,20 @@ internal sealed class DailyResetPlayerWindow : Window
             LoadedBehavior = MediaState.Manual,
             UnloadedBehavior = MediaState.Stop,
             Stretch = Stretch.UniformToFill,
-            Height = 520,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Stretch
         };
 
         var videoContainer = new Border
         {
-            Height = 520,
             Margin = new Thickness(24, 0, 24, 0),
             CornerRadius = new CornerRadius(16),
-            Background = UI.Brush("#0A0B0E"),
-            BorderBrush = UI.Brush("#1E222B"),
+            Background = UI.Brush("#1B1B1E"),
+            BorderBrush = UI.Brush("#252321"),
             BorderThickness = new Thickness(1),
             ClipToBounds = true,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch,
             Child = media
         };
         videoContainer.SizeChanged += (_, _) =>
@@ -140,8 +168,8 @@ internal sealed class DailyResetPlayerWindow : Window
             Maximum = 1,
             Height = 6,
             IsHitTestVisible = false,
-            Background = UI.Brush("#22252E"),
-            Foreground = UI.Brush("#E28743"),
+            Background = UI.Brush("#252321"),
+            Foreground = UI.Brush("#E58A43"),
             BorderThickness = new Thickness(0),
             Margin = new Thickness(0, 0, 0, 12)
         };
@@ -150,8 +178,11 @@ internal sealed class DailyResetPlayerWindow : Window
         completeButton = UI.Button("✓ Засчитать выполнение", () => _ = CompleteAsync());
         completeButton.Height = 44;
         completeButton.FontSize = 14;
-        completeButton.FontWeight = FontWeights.Bold;
+        completeButton.FontWeight = FontWeights.Normal;
         completeButton.IsEnabled = false; // Disabled during playback!
+        completeButton.Background = UI.Brush("#252321");
+        completeButton.Foreground = UI.Brush("#96918B");
+        completeButton.BorderThickness = new Thickness(0);
         completeButton.HorizontalAlignment = HorizontalAlignment.Stretch;
         bottomBar.Children.Add(completeButton);
 
@@ -162,13 +193,13 @@ internal sealed class DailyResetPlayerWindow : Window
         media.MediaEnded += (_, _) =>
         {
             progress.Value = 1;
-            completeButton.IsEnabled = true;
+            EnableCompletion();
         };
 
         media.MediaFailed += (_, e) =>
         {
             app.Store.Log(e.ErrorException ?? new Exception("MediaElement failed: " + e.ToString()));
-            completeButton.IsEnabled = true;
+            EnableCompletion();
         };
 
         timer.Tick += (_, _) =>
@@ -179,7 +210,8 @@ internal sealed class DailyResetPlayerWindow : Window
                 progress.Value = Math.Clamp(ratio, 0, 1);
                 if (ratio >= 0.995 || media.Position >= media.NaturalDuration.TimeSpan)
                 {
-                    completeButton.IsEnabled = true;
+                    progress.Value = 1;
+                    EnableCompletion();
                 }
             }
         };
@@ -202,6 +234,10 @@ internal sealed class DailyResetPlayerWindow : Window
                 media.Play();
                 timer.Start();
             }
+            else
+            {
+                EnableCompletion();
+            }
         };
 
         Closed += (_, _) =>
@@ -210,6 +246,15 @@ internal sealed class DailyResetPlayerWindow : Window
             media.Stop();
             media.Close();
         };
+    }
+
+    private void EnableCompletion()
+    {
+        if (completed || completeButton.IsEnabled) return;
+        completeButton.IsEnabled = true;
+        completeButton.Background = UI.Brush("#E58A43");
+        completeButton.Foreground = UI.Brush("#101113");
+        completeButton.FontWeight = FontWeights.Bold;
     }
 
     private static string? ResolveVideoFile()
@@ -221,6 +266,7 @@ internal sealed class DailyResetPlayerWindow : Window
     {
         if (completed) return;
         completed = true;
+        completeButton.IsEnabled = false;
         try
         {
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);

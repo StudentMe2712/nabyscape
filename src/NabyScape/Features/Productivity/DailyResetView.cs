@@ -18,18 +18,21 @@ internal sealed class DailyResetView : Border
         this.app = app;
         CornerRadius = new CornerRadius(14);
         BorderThickness = new Thickness(1);
-        BorderBrush = UI.Brush("#3E2B20");
+        BorderBrush = UI.Brush("#252321");
+        Background = UI.Brush("#1B1B1E");
         Padding = new Thickness(16);
         Margin = new Thickness(0, 0, 0, 8);
 
-        var gradient = new LinearGradientBrush
+        MouseEnter += (_, _) =>
         {
-            StartPoint = new Point(0, 0),
-            EndPoint = new Point(1, 1)
+            Background = UI.Brush("#252321");
+            BorderBrush = UI.Brush("#E58A43");
         };
-        gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#2A1E18"), 0.0));
-        gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#16141A"), 1.0));
-        Background = gradient;
+        MouseLeave += (_, _) =>
+        {
+            Background = UI.Brush("#1B1B1E");
+            BorderBrush = UI.Brush("#252321");
+        };
 
         var grid = new Grid();
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
@@ -45,13 +48,13 @@ internal sealed class DailyResetView : Border
 
         var title = UI.Heading("Перезагрузка дня", 16);
         title.FontWeight = FontWeights.Bold;
-        title.Foreground = UI.Brush("#F0EDE8");
+        title.Foreground = UI.Brush("#F2E9DF");
         headerRow.Children.Add(title);
 
         var settingsBtn = Icons.Button("settings", "Настройки видео / Плейлист", OpenPlaylist, false, 28);
         settingsBtn.Margin = new Thickness(8, 0, 0, 0);
-        settingsBtn.Background = UI.Brush("#261B15");
-        settingsBtn.BorderBrush = UI.Brush("#3E2B20");
+        settingsBtn.Background = UI.Brush("#252321");
+        settingsBtn.BorderBrush = UI.Brush("#252321");
         settingsBtn.BorderThickness = new Thickness(1);
         settingsBtn.VerticalAlignment = VerticalAlignment.Center;
         settingsBtn.ToolTip = "Настройки видео / Плейлист";
@@ -76,14 +79,14 @@ internal sealed class DailyResetView : Border
         Grid.SetColumn(info, 0);
         grid.Children.Add(info);
 
-        var playIcon = Icons.Create("play", 20, Brushes.White);
+        var playIcon = Icons.Create("play", 20, UI.Brush("#101113"));
         playIcon.Margin = new Thickness(2, 0, 0, 0);
         var playBtnBorder = new Border
         {
             Width = 46,
             Height = 46,
             CornerRadius = new CornerRadius(23),
-            Background = UI.Brush("#E28743"),
+            Background = UI.Brush("#E58A43"),
             Child = playIcon,
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Right,
@@ -125,12 +128,12 @@ internal sealed class DailyResetView : Border
         if (done)
         {
             statusText.Text = "✓ Выполнено сегодня";
-            statusText.Foreground = UI.Brush("#4ADE80");
+            statusText.Foreground = UI.Brush("#E58A43");
         }
         else
         {
             statusText.Text = "Готово к просмотру";
-            statusText.Foreground = UI.Brush("#EAB308");
+            statusText.Foreground = UI.Brush("#96918B");
         }
     }
 

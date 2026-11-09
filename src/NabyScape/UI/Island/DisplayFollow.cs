@@ -64,8 +64,17 @@ public sealed partial class OverlayWindow
         ConfigureDisplayFollow();
         if(!DiagnosticRun)pointerCheck.Start();
     }
+    private string? _lastScreenDeviceName;
+    private System.Drawing.Rectangle _lastScreenBounds;
     private void ConfigureDisplayFollow()
     {
+        var screen=IslandScreen;
+        if(_lastScreenDeviceName!=screen?.DeviceName || _lastScreenBounds!=(screen?.Bounds ?? System.Drawing.Rectangle.Empty))
+        {
+            _lastScreenDeviceName=screen?.DeviceName;
+            _lastScreenBounds=screen?.Bounds ?? System.Drawing.Rectangle.Empty;
+            _currentDesktopState=null;
+        }
         if(app.Settings.DisplayMode!="Follow"){StopFollowSlide();Native.FollowMonitor=null;}
         if(userHidden || DiagnosticRun)
         {
@@ -75,11 +84,14 @@ public sealed partial class OverlayWindow
         }
         if(!pointerCheck.IsEnabled){followPolicy.Reset();pointerCheck.Start();}
     }
+    private bool? _currentDesktopState;
     private void CheckDesktopMode()
     {
         if(DiagnosticRun || userHidden || hwnd==IntPtr.Zero)return;
         var screen=IslandScreen;
         bool isClean=Native.IsDesktopClean(hwnd, screen.Bounds);
+        if(_currentDesktopState.HasValue && _currentDesktopState.Value==isClean)return;
+        _currentDesktopState=isClean;
         if(!isClean)
         {
             if(Visibility!=Visibility.Collapsed)
@@ -101,24 +113,45 @@ public sealed partial class OverlayWindow
             }
         }
     }
+    private int _edgePeekUntuckedTicks;
     private void CheckDesktopEdgePeek()
     {
         if(DiagnosticRun || userHidden || !IsVisible || expanded || hwnd==IntPtr.Zero)return;
+        if(app.Settings.DockEdge!="Top")return;
         if(!Native.CursorPoint(out var pt))return;
-        var screen=IslandScreen;double scale=Native.Scale(screen);var b=app.Settings.DockEdge=="Top"?screen.Bounds:screen.WorkingArea;
+        var screen=IslandScreen;double scale=Native.Scale(screen);var b=screen.Bounds;
         double width=app.Settings.Width*scale;
         double centerX=b.Left+(b.Width-width)*app.Settings.Horizontal/100+width/2;
-        bool atTopEdge=pt.Y<=b.Top+Math.Max(2, 4*scale) && Math.Abs(pt.X-centerX)<=Math.Max(width/2+16*scale, 100*scale);
+        double toleranceX=Math.Max(width/2+24*scale, 100*scale);
+        bool atTopEdge=pt.Y<=b.Top+Math.Max(4, 6*scale) && Math.Abs(pt.X-centerX)<=toleranceX;
         double pillHeight=app.Settings.Height*scale;
-        bool overPill=pt.Y>=b.Top && pt.Y<=b.Top+pillHeight+8*scale && Math.Abs(pt.X-centerX)<=width/2+16*scale;
+        bool overPill=pt.Y>=b.Top-4*scale && pt.Y<=b.Top+pillHeight+16*scale && Math.Abs(pt.X-centerX)<=toleranceX;
         bool inside=atTopEdge || overPill || PointerInside() || IsMouseOver;
         if(tucked)
         {
-            if(atTopEdge)SetTucked(false);
+            if(atTopEdge)
+            {
+                _edgePeekUntuckedTicks=5;
+                SetTucked(false);
+            }
         }
-        else
+        else if(TuckRequested)
         {
-            if(!inside)SetTucked(true);
+            if(inside)
+            {
+                _edgePeekUntuckedTicks=3;
+            }
+            else
+            {
+                if(_edgePeekUntuckedTicks>0)
+                {
+                    _edgePeekUntuckedTicks--;
+                }
+                else
+                {
+                    SetTucked(true);
+                }
+            }
         }
     }
     private bool HiddenTuckHover=>IsTucked && app.Settings.TuckEdge==0 && !userHidden;

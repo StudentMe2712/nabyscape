@@ -273,14 +273,20 @@ public sealed partial class OverlayWindow : Window
         // The taskbar, Start or NabyScape's own windows do not uncover a maximized app behind them.
         var ruleWindow=DiagnosticRun?foreground:VisibilityPolicy.RuleWindow(foreground,lastExternalForeground,Native.ForegroundIsTransientShellOrOwn());
         bool hide=visibilityOverride==IntPtr.Zero && Native.ShouldHideOn(Native.ChooseScreen(app.Settings),ruleWindow,app.Settings.HideFullscreen,app.Settings.HideMaximized);
+        bool hideChanged=environmentHidden!=hide;
         environmentHidden=hide;
+        bool prevTucked=tucked;
         if(TuckRequested)
         {
             bool engaged=fileDragActive || PointerInside() || PeekInteractionActive || IsMouseCaptureWithin || (expanded && IsKeyboardFocusWithin);
-            if(AutoTuckPolicy.ShouldTuck(TuckRequested,userHidden,expanded,peeking,engaged)){Collapse();ApplyEnvironmentTuck();}
+            if(AutoTuckPolicy.ShouldTuck(TuckRequested,userHidden,expanded,peeking,engaged))
+            {
+                if(expanded || peeking)Collapse();
+                ApplyEnvironmentTuck();
+            }
         }
         else SetTucked(false);
-        Position();
+        if(hideChanged || prevTucked!=tucked || !positionContextReady)Position();
     }
     private void Update()
     {

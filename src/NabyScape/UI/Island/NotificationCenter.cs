@@ -47,7 +47,7 @@ public sealed partial class OverlayWindow
         var content=new Grid();for(int row=0;row<4;row++)content.RowDefinitions.Add(new(){Height=row==2?new GridLength(1,GridUnitType.Star):GridLength.Auto});
         var header=new DockPanel{Margin=new(0,0,0,4)};
         centerClear=UI.CaptionButton("Очистить все",()=>app.Notifications.ClearHistory());centerClear.FontSize=11;centerClear.MinHeight=28;centerClear.Padding=new(10,3,10,3);centerClear.VerticalAlignment=VerticalAlignment.Center;DockPanel.SetDock(centerClear,Dock.Right);header.Children.Add(centerClear);
-        var badge=new Border{Width=30,Height=30,CornerRadius=new(15),Background=UI.Brush("#19FFFFFF"),Margin=new(0,0,10,0),Child=Icons.Create("bell",15)};header.Children.Add(badge);
+        var badge=new Border{Width=30,Height=30,CornerRadius=new(15),Background=UI.Brush("#252321"),Margin=new(0,0,10,0),Child=Icons.Create("bell",15,UI.Brush("#E58A43"))};header.Children.Add(badge);
         var heading=UI.Heading(Localization.Text("Notifications"),17);heading.FontWeight=FontWeights.SemiBold;heading.VerticalAlignment=VerticalAlignment.Center;header.Children.Add(heading);
         content.Children.Add(header);
         centerSummary=UI.Text("",11,UI.Muted);centerSummary.Margin=new(40,0,0,12);Grid.SetRow(centerSummary,1);content.Children.Add(centerSummary);
@@ -123,9 +123,9 @@ public sealed partial class OverlayWindow
         if(notice.Kind=="external" && !string.IsNullOrEmpty(notice.AppId)){open=()=>{Collapse();ExternalAppLauncher.Open(notice.AppId);};hint="Click to open the app";}
         else if(files.Length>0){open=()=>{try{var info=new System.Diagnostics.ProcessStartInfo("explorer.exe"){UseShellExecute=false};info.ArgumentList.Add("/select,");info.ArgumentList.Add(files[0]);System.Diagnostics.Process.Start(info);}catch(Exception ex){app.Store.Log(ex);}};hint="Click to show in folder";}
         else if(notice.Kind=="updates"){open=()=>{Collapse();app.ShowSettings("Application");};hint="Click to open updates";}
-        var idle=UI.Brush(fresh?"#17FFFFFF":"#0DFFFFFF");var hover=UI.Brush("#24FFFFFF");
-        var row=new Border{Child=grid,Background=idle,CornerRadius=new(14),Padding=new(12,11,8,11),Margin=new(0,0,0,6)};
-        row.MouseEnter+=(_,_)=>{row.Background=hover;remove.Opacity=.8;};row.MouseLeave+=(_,_)=>{row.Background=idle;remove.Opacity=0;};
+        var idle=UI.Brush("#1B1B1E");var hover=UI.Brush("#252321");
+        var row=new Border{Child=grid,Background=idle,BorderBrush=UI.Brush("#252321"),BorderThickness=new Thickness(1),CornerRadius=new(14),Padding=new(12,11,8,11),Margin=new(0,0,0,6)};
+        row.MouseEnter+=(_,_)=>{row.Background=hover;row.BorderBrush=UI.Brush("#E58A43");remove.Opacity=.8;};row.MouseLeave+=(_,_)=>{row.Background=idle;row.BorderBrush=UI.Brush("#252321");remove.Opacity=0;};
         remove.GotKeyboardFocus+=(_,_)=>remove.Opacity=.8;remove.LostKeyboardFocus+=(_,_)=>remove.Opacity=0;
         if(open!=null)
         {

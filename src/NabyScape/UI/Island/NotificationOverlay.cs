@@ -16,7 +16,7 @@ public sealed partial class OverlayWindow
     private Button? noticeNext;
     private void RefreshNoticeEdge()
     {
-        if(noticeEdge==null){noticeEdge=new(){Width=18,Height=2,CornerRadius=new(1),Background=Brushes.White,HorizontalAlignment=HorizontalAlignment.Center,VerticalAlignment=VerticalAlignment.Top,IsHitTestVisible=false};visuals.Children.Add(noticeEdge);}
+        if(noticeEdge==null){noticeEdge=new(){Width=18,Height=2,CornerRadius=new(1),Background=UI.Brush("#E58A43"),HorizontalAlignment=HorizontalAlignment.Center,VerticalAlignment=VerticalAlignment.Top,IsHitTestVisible=false};visuals.Children.Add(noticeEdge);}
         // A short accent line under the closed dock means unread alerts are waiting in the center.
         noticeEdge.Width=20;noticeEdge.Height=3;noticeEdge.CornerRadius=new(1.5);noticeEdge.Background=UI.Brush(app.Settings.Accent);
         noticeEdge.Margin=new(0,app.Settings.Height-4,0,0);
@@ -61,7 +61,7 @@ public sealed partial class OverlayWindow
         // Message text from other apps can be private; the setting keeps it off the screen edge.
         bool hideText=notice.Kind=="external" && !app.Settings.ExternalNotificationText;
         var detail=UI.Text(hideText?Localization.Text("Open the notification center to read it."):notice.Detail,12,UI.Muted);detail.LineHeight=18;content.Children.Add(detail);
-        var accent=new LinearGradientBrush(UI.Brush("#C4C9D2").Color,UI.Brush("#30343C").Color,0);accent.Freeze();content.Children.Add(new Border{Height=2,CornerRadius=new(1),Background=accent,Margin=new(0,15,0,4)});
+        var accent=new LinearGradientBrush(UI.Brush("#E58A43").Color,UI.Brush("#B96A38").Color,0);accent.Freeze();content.Children.Add(new Border{Height=2,CornerRadius=new(1),Background=accent,Margin=new(0,15,0,4)});
         string[] paths=(notice.Files??Array.Empty<string>()).Where(File.Exists).Take(40).ToArray();
         if(paths.Length>0)
         {

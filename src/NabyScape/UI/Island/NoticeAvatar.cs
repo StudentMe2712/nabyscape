@@ -26,7 +26,7 @@ internal static class NoticeAvatar
             {
                 // Full-bleed icons fill the circle; transparent glyph logos sit inside a soft plate.
                 bool fullBleed=ExternalAppIcons.FullBleed(notice.AppId);
-                host.Children.Add(new System.Windows.Shapes.Ellipse{Fill=UI.Brush("#2A2D33")});
+                host.Children.Add(new System.Windows.Shapes.Ellipse{Fill=UI.Brush("#252321")});
                 var image=new Image{Source=logo,Stretch=fullBleed?Stretch.UniformToFill:Stretch.Uniform,Margin=new(fullBleed?0:size*.2)};
                 RenderOptions.SetBitmapScalingMode(image,BitmapScalingMode.HighQuality);host.Children.Add(image);
                 return host;
@@ -36,7 +36,7 @@ internal static class NoticeAvatar
             var letter=UI.Text(Initial(name),size*.42);letter.FontWeight=FontWeights.SemiBold;letter.Foreground=Brushes.White;letter.HorizontalAlignment=HorizontalAlignment.Center;letter.VerticalAlignment=VerticalAlignment.Center;letter.TextAlignment=TextAlignment.Center;
             host.Children.Add(letter);return host;
         }
-        host.Children.Add(new System.Windows.Shapes.Ellipse{Fill=UI.Brush("#16181B")});
+        host.Children.Add(new System.Windows.Shapes.Ellipse{Fill=UI.Brush("#1B1B1E")});
         try{naby??=Load();}catch{naby=null;}
         if(naby!=null){var image=new Image{Source=naby,Stretch=Stretch.UniformToFill,Margin=new(-size*.06)};RenderOptions.SetBitmapScalingMode(image,BitmapScalingMode.HighQuality);host.Children.Add(image);}
         else host.Children.Add(Icons.Create(NotificationCenterText.Icon(notice.Kind),size*.5));

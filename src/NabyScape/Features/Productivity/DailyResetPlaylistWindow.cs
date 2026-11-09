@@ -27,8 +27,8 @@ internal sealed class DailyResetPlaylistWindow : Window
 
         var rootBorder = new Border
         {
-            Background = UI.Brush("#121418"),
-            BorderBrush = UI.Brush("#2A2E38"),
+            Background = UI.Brush("#101113"),
+            BorderBrush = UI.Brush("#252321"),
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(16),
             ClipToBounds = true
@@ -57,7 +57,7 @@ internal sealed class DailyResetPlaylistWindow : Window
         };
         var title = UI.Heading("Плейлист Перезагрузки дня", 17);
         title.FontWeight = FontWeights.SemiBold;
-        title.Foreground = UI.Brush("#F0EDE8");
+        title.Foreground = UI.Brush("#F2E9DF");
         headerLeft.Children.Add(title);
 
         header.Children.Add(headerLeft);
@@ -81,10 +81,10 @@ internal sealed class DailyResetPlaylistWindow : Window
         var folderBtn = UI.Button("📁 Выбрать папку с видео", SelectFolder);
         folderBtn.Height = 36;
         folderBtn.Padding = new Thickness(14, 0, 14, 0);
-        folderBtn.Background = UI.Brush("#1C2028");
-        folderBtn.BorderBrush = UI.Brush("#2A2E38");
+        folderBtn.Background = UI.Brush("#252321");
+        folderBtn.BorderBrush = UI.Brush("#252321");
         folderBtn.BorderThickness = new Thickness(1);
-        folderBtn.Foreground = UI.Brush("#F0EDE8");
+        folderBtn.Foreground = UI.Brush("#F2E9DF");
         folderBtn.FontSize = 12.5;
         folderBtn.FontWeight = FontWeights.Medium;
         folderBtn.ToolTip = "Сканировать папку на наличие видеофайлов MP4 и MKV";
@@ -94,10 +94,10 @@ internal sealed class DailyResetPlaylistWindow : Window
         filesBtn.Height = 36;
         filesBtn.Margin = new Thickness(10, 0, 0, 0);
         filesBtn.Padding = new Thickness(14, 0, 14, 0);
-        filesBtn.Background = UI.Brush("#E28743");
+        filesBtn.Background = UI.Brush("#E58A43");
         filesBtn.BorderBrush = Brushes.Transparent;
         filesBtn.BorderThickness = new Thickness(0);
-        filesBtn.Foreground = Brushes.White;
+        filesBtn.Foreground = UI.Brush("#101113");
         filesBtn.FontSize = 12.5;
         filesBtn.FontWeight = FontWeights.SemiBold;
         filesBtn.ToolTip = "Выбрать видеофайлы MP4 или MKV";
@@ -110,8 +110,8 @@ internal sealed class DailyResetPlaylistWindow : Window
         countLabel.VerticalAlignment = VerticalAlignment.Center;
         var countBadge = new Border
         {
-            Background = UI.Brush("#1C2028"),
-            BorderBrush = UI.Brush("#2A2E38"),
+            Background = UI.Brush("#252321"),
+            BorderBrush = UI.Brush("#252321"),
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(12),
             Padding = new Thickness(10, 4, 10, 4),
@@ -128,7 +128,7 @@ internal sealed class DailyResetPlaylistWindow : Window
         var separator = new Border
         {
             Height = 1,
-            Background = UI.Brush("#1E222B"),
+            Background = UI.Brush("#252321"),
             Margin = new Thickness(24, 0, 24, 12)
         };
 
@@ -147,8 +147,8 @@ internal sealed class DailyResetPlaylistWindow : Window
         // Row 3: Footer
         var footer = new Border
         {
-            Background = UI.Brush("#0E1014"),
-            BorderBrush = UI.Brush("#1E222B"),
+            Background = UI.Brush("#101113"),
+            BorderBrush = UI.Brush("#252321"),
             BorderThickness = new Thickness(0, 1, 0, 0),
             Padding = new Thickness(24, 10, 24, 10)
         };
@@ -192,18 +192,18 @@ internal sealed class DailyResetPlaylistWindow : Window
                 Margin = new Thickness(0, 60, 0, 60)
             };
 
-            var emptyIcon = Icons.Create("nav-media", 44, UI.Brush("#363C4C"));
+            var emptyIcon = Icons.Create("nav-media", 44, UI.Brush("#252321"));
             emptyIcon.HorizontalAlignment = HorizontalAlignment.Center;
             emptyPanel.Children.Add(emptyIcon);
 
             var emptyTitle = UI.Heading("Плейлист пуст", 15);
             emptyTitle.FontWeight = FontWeights.SemiBold;
-            emptyTitle.Foreground = UI.Brush("#A6ABB4");
+            emptyTitle.Foreground = UI.Brush("#F2E9DF");
             emptyTitle.HorizontalAlignment = HorizontalAlignment.Center;
             emptyTitle.Margin = new Thickness(0, 12, 0, 0);
             emptyPanel.Children.Add(emptyTitle);
 
-            var emptyHint = UI.Text("Выберите папку или добавьте файлы MP4/MKV для ротации Перезагрузки дня", 12.5, UI.Brush("#636874"));
+            var emptyHint = UI.Text("Выберите папку или добавьте файлы MP4/MKV для ротации Перезагрузки дня", 12.5, UI.Brush("#96918B"));
             emptyHint.HorizontalAlignment = HorizontalAlignment.Center;
             emptyHint.Margin = new Thickness(0, 6, 0, 0);
             emptyPanel.Children.Add(emptyHint);
@@ -223,8 +223,8 @@ internal sealed class DailyResetPlaylistWindow : Window
     {
         var card = new Border
         {
-            Background = UI.Brush("#16181E"),
-            BorderBrush = UI.Brush("#242833"),
+            Background = UI.Brush("#1B1B1E"),
+            BorderBrush = UI.Brush("#252321"),
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(10),
             Margin = new Thickness(0, 0, 0, 10),
@@ -234,13 +234,13 @@ internal sealed class DailyResetPlaylistWindow : Window
         // Hover highlight
         card.MouseEnter += (_, _) =>
         {
-            card.Background = UI.Brush("#1E222B");
-            card.BorderBrush = UI.Brush("#363D4E");
+            card.Background = UI.Brush("#252321");
+            card.BorderBrush = UI.Brush("#E58A43");
         };
         card.MouseLeave += (_, _) =>
         {
-            card.Background = UI.Brush("#16181E");
-            card.BorderBrush = UI.Brush("#242833");
+            card.Background = UI.Brush("#1B1B1E");
+            card.BorderBrush = UI.Brush("#252321");
         };
 
         var grid = new Grid();
@@ -261,14 +261,14 @@ internal sealed class DailyResetPlaylistWindow : Window
             StartPoint = new Point(0, 0),
             EndPoint = new Point(1, 1)
         };
-        thumbGradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#2A1E18"), 0.0));
-        thumbGradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#16141A"), 1.0));
+        thumbGradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#252321"), 0.0));
+        thumbGradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#1B1B1E"), 1.0));
         thumbBorder.Background = thumbGradient;
 
         var thumbGrid = new Grid();
 
         // Fallback video icon
-        var fallbackIcon = Icons.Create("play", 24, UI.Brush("#E28743"));
+        var fallbackIcon = Icons.Create("play", 24, UI.Brush("#E58A43"));
         fallbackIcon.HorizontalAlignment = HorizontalAlignment.Center;
         fallbackIcon.VerticalAlignment = VerticalAlignment.Center;
         thumbGrid.Children.Add(fallbackIcon);
@@ -286,7 +286,7 @@ internal sealed class DailyResetPlaylistWindow : Window
         {
             var durationBadge = new Border
             {
-                Background = UI.Brush("#D0000000"),
+                Background = UI.Brush("#D0101113"),
                 CornerRadius = new CornerRadius(4),
                 Padding = new Thickness(5, 1, 5, 1),
                 Margin = new Thickness(4),
@@ -298,7 +298,7 @@ internal sealed class DailyResetPlaylistWindow : Window
                 Text = item.Duration,
                 FontSize = 10,
                 FontWeight = FontWeights.Bold,
-                Foreground = Brushes.White
+                Foreground = UI.Brush("#F2E9DF")
             };
             durationBadge.Child = durationText;
             thumbGrid.Children.Add(durationBadge);
@@ -335,7 +335,7 @@ internal sealed class DailyResetPlaylistWindow : Window
 
         var titleBlock = UI.Heading(item.Title, 14);
         titleBlock.FontWeight = FontWeights.SemiBold;
-        titleBlock.Foreground = UI.Brush("#F0EDE8");
+        titleBlock.Foreground = UI.Brush("#F2E9DF");
         titleBlock.TextTrimming = TextTrimming.CharacterEllipsis;
         titleBlock.ToolTip = item.Title;
         infoStack.Children.Add(titleBlock);
@@ -353,8 +353,8 @@ internal sealed class DailyResetPlaylistWindow : Window
         {
             var extBadge = new Border
             {
-                Background = UI.Brush("#20242E"),
-                BorderBrush = UI.Brush("#2D3342"),
+                Background = UI.Brush("#252321"),
+                BorderBrush = UI.Brush("#252321"),
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(4),
                 Padding = new Thickness(5, 1, 5, 1),
@@ -364,14 +364,14 @@ internal sealed class DailyResetPlaylistWindow : Window
                     Text = ext,
                     FontSize = 10,
                     FontWeight = FontWeights.SemiBold,
-                    Foreground = UI.Brush("#A6ABB4")
+                    Foreground = UI.Brush("#96918B")
                 }
             };
             durationRow.Children.Add(extBadge);
         }
         infoStack.Children.Add(durationRow);
 
-        var pathBlock = UI.Text(item.Path, 11, UI.Brush("#5B6170"));
+        var pathBlock = UI.Text(item.Path, 11, UI.Brush("#96918B"));
         pathBlock.TextTrimming = TextTrimming.CharacterEllipsis;
         pathBlock.ToolTip = item.Path;
         pathBlock.Margin = new Thickness(0, 3, 0, 0);
@@ -387,8 +387,8 @@ internal sealed class DailyResetPlaylistWindow : Window
             RefreshList();
         }, false, 36);
         deleteBtn.VerticalAlignment = VerticalAlignment.Center;
-        deleteBtn.Background = UI.Brush("#1C2028");
-        deleteBtn.BorderBrush = UI.Brush("#2A2E38");
+        deleteBtn.Background = UI.Brush("#252321");
+        deleteBtn.BorderBrush = UI.Brush("#252321");
         deleteBtn.BorderThickness = new Thickness(1);
         deleteBtn.ToolTip = "Удалить из плейлиста";
 
@@ -396,12 +396,12 @@ internal sealed class DailyResetPlaylistWindow : Window
         deleteBtn.MouseEnter += (_, _) =>
         {
             deleteBtn.Background = UI.Brush("#3A1E22");
-            deleteBtn.BorderBrush = UI.Brush("#5C2B30");
+            deleteBtn.BorderBrush = UI.Brush("#B96A38");
         };
         deleteBtn.MouseLeave += (_, _) =>
         {
-            deleteBtn.Background = UI.Brush("#1C2028");
-            deleteBtn.BorderBrush = UI.Brush("#2A2E38");
+            deleteBtn.Background = UI.Brush("#252321");
+            deleteBtn.BorderBrush = UI.Brush("#252321");
         };
 
         Grid.SetColumn(deleteBtn, 2);

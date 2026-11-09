@@ -17,13 +17,13 @@ internal static class UI
     internal static void ResourceBrush(string key,Brush brush)
     {if(Application.Current==null)return;var old=Application.Current.Resources[key];if(ReferenceEquals(old,brush) || old is SolidColorBrush a && brush is SolidColorBrush b && a.Color==b.Color)return;Application.Current.Resources[key]=brush;}
     public static Brush ContrastText(string color)
-    {var c=Brush(color).Color;return c.R*.2126+c.G*.7152+c.B*.0722>150?Brush("#111317"):Brushes.White;}
+    {var c=Brush(color).Color;return c.R*.2126+c.G*.7152+c.B*.0722>150?Brush("#101113"):Brush("#F2E9DF");}
     public static void ApplyControlTheme(Settings settings)
     {if(Application.Current==null)return;if(Accessibility.HighContrast){ResourceBrush("ControlFill",SystemColors.WindowBrush);ResourceBrush("ControlBorder",SystemColors.WindowTextBrush);ResourceBrush("ControlText",SystemColors.WindowTextBrush);ResourceBrush("SelectionFill",SystemColors.HighlightBrush);ResourceBrush("SelectionText",SystemColors.HighlightTextBrush);ResourceBrush("Accent",SystemColors.HighlightBrush);ResourceBrush("AccentText",SystemColors.HighlightTextBrush);ResourceBrush("CheckedFill",SystemColors.HighlightBrush);ResourceBrush("CheckedText",SystemColors.HighlightTextBrush);ResourceBrush("SwitchKnob",SystemColors.WindowTextBrush);ResourceBrush("TrackFill",SystemColors.WindowTextBrush);ResourceBrush("ProgressFill",SystemColors.HighlightBrush);ResourceBrush("ProgressTrack",SystemColors.WindowBrush);return;}foreach(var entry in new[]{("ControlFill",settings.ControlFill),("ControlBorder",settings.ControlBorder),("SelectionFill",settings.SelectionFill)})ResourceBrush(entry.Item1,Brush(entry.Item2));ResourceBrush("ControlText",ContrastText(settings.ControlFill));ResourceBrush("SelectionText",ContrastText(settings.SelectionFill));ResourceBrush("CheckedText",Brush(settings.ControlFill)); }
-    public static readonly Brush Muted=Brush("#A6ABB4");
+    public static readonly Brush Muted=Brush("#96918B");
     public static TextBlock Text(string text,double size=13,Brush? color=null)
     {
-        var label=new TextBlock{Text=text,FontSize=size,Foreground=color ?? Brush("#F2F3F5"),VerticalAlignment=VerticalAlignment.Center,TextWrapping=TextWrapping.Wrap};
+        var label=new TextBlock{Text=text,FontSize=size,Foreground=color ?? Brush("#F2E9DF"),VerticalAlignment=VerticalAlignment.Center,TextWrapping=TextWrapping.Wrap};
         if(Accessibility.TextScale!=1 || Accessibility.HighContrast)label.Loaded+=ApplyCaptionOnLoad;
         return label;
     }
@@ -46,7 +46,7 @@ internal static class UI
     public static Button Button(string text,Action action,bool primary=false)
     {
         var b=new Button{Content=text,Tag=new CornerRadius(8)};AutomationProperties.SetName(b,text);
-        if(primary) { b.SetResourceReference(Control.BackgroundProperty,"Accent");b.Foreground=Accessibility.HighContrast?SystemColors.HighlightTextBrush:Brushes.Black;b.FontWeight=FontWeights.SemiBold;b.BorderThickness=new(0); }
+        if(primary) { b.SetResourceReference(Control.BackgroundProperty,"Accent");b.Foreground=Accessibility.HighContrast?SystemColors.HighlightTextBrush:Brush("#101113");b.FontWeight=FontWeights.SemiBold;b.BorderThickness=new(0); }
         Motion.Button(b);b.Click+=(_,_)=>action();return b;
     }
     public static StackPanel Row(params UIElement[] elements)

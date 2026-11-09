@@ -55,8 +55,8 @@ internal static class MinimalWidgets
 internal sealed class ProgressRing : ProgressBar
 {
     private static readonly DependencyProperty VisualValueProperty=DependencyProperty.Register("VisualValue",typeof(double),typeof(ProgressRing),new FrameworkPropertyMetadata(0d,FrameworkPropertyMetadataOptions.AffectsRender));
-    private static readonly Pen track=new(UI.Brush("#343840"),2.3);
-    private Pen active=new(Brushes.White,2.3){StartLineCap=PenLineCap.Round,EndLineCap=PenLineCap.Round};
+    private static readonly Pen track=new(UI.Brush("#252321"),2.3);
+    private Pen active=new(UI.Brush("#E58A43"),2.3){StartLineCap=PenLineCap.Round,EndLineCap=PenLineCap.Round};
     internal ProgressRing()
     {
         Minimum=0;Maximum=1;MinHeight=112;MaxHeight=154;Height=128;IsHitTestVisible=false;
@@ -69,7 +69,7 @@ internal sealed class ProgressRing : ProgressBar
         };
         Unloaded+=(_,_)=>{BeginAnimation(VisualValueProperty,null);SetValue(VisualValueProperty,Value);};
     }
-    internal void Accent(bool focus){var brush=focus?UI.Brush("#DCC7AE"):Brushes.White;if(active.Brush==brush)return;active=new(brush,2.3){StartLineCap=PenLineCap.Round,EndLineCap=PenLineCap.Round};InvalidateVisual();}
+    internal void Accent(bool focus){var brush=focus?UI.Brush("#E58A43"):UI.Brush("#B96A38");if(active.Brush==brush)return;active=new(brush,2.3){StartLineCap=PenLineCap.Round,EndLineCap=PenLineCap.Round};InvalidateVisual();}
     protected override void OnRender(DrawingContext dc)
     {
         double radius=Math.Max(0,Math.Min(ActualWidth,ActualHeight)/2-3);if(radius<2)return;

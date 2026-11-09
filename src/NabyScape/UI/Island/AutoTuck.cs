@@ -45,7 +45,6 @@ public sealed partial class OverlayWindow
     private void ApplyEnvironmentTuck(){if(TuckRequested && !userHidden && !expanded && !peeking)SetTucked(true);else if(!TuckRequested)SetTucked(false);}
     private void SetTucked(bool value)
     {
-        bool changed=tucked!=value;tucked=value;ConfigureDisplayFollow();RefreshNoticeEdge();UpdateAmbientMotion();
         double destination=0,destinationX=0;
         if(value)
         {
@@ -55,7 +54,10 @@ public sealed partial class OverlayWindow
         }
         // Manual hide must cancel an in-flight reveal even when its destination is already zero.
         if(userHidden){tuckDestination=destination;tuckDestinationX=destinationX;tuckMotion.Dispose();tuckSlide.X=destinationX;tuckSlide.Y=destination;return;}
-        if(!changed && Math.Abs(destination-tuckDestination)<.001 && Math.Abs(destinationX-tuckDestinationX)<.001 && (Motion.Enabled || !tuckMotion.Active))return;
+        if(tucked==value && Math.Abs(destination-tuckDestination)<.001 && Math.Abs(destinationX-tuckDestinationX)<.001 && (tuckMotion.Active || (Math.Abs(destination-tuckSlide.Y)<.001 && Math.Abs(destinationX-tuckSlide.X)<.001))) return;
+        bool changed=tucked!=value;tucked=value;
+        if(changed)ConfigureDisplayFollow();
+        RefreshNoticeEdge();UpdateAmbientMotion();
         tuckDestination=destination;tuckDestinationX=destinationX;
         if(value && changed)
         {
