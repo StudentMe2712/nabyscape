@@ -21,7 +21,7 @@ public sealed partial class SettingsWindow
         ["Content"]=new[]{"Enabled widgets & order","Focus sessions","Clipboard history","Ваши виджеты","Сессии фокуса (Помодоро)"},
         ["Audio"]=new[]{"Closed media display","Lyrics"},
         ["Notifications"]=new[]{"Notifications","Other apps"},
-        ["Application"]=new[]{"Language & accessibility","Behavior","Updates","Local storage","About NabyScape"},
+        ["Application"]=new[]{"Language & accessibility","Behavior","Updates","Local storage","About Desktopia"},
         ["System"]=new[]{"Clock"},
         ["Launch"]=new[]{"Shortcuts"}
     };

@@ -15,8 +15,8 @@ internal sealed record ExternalToast(uint Id,string App,string AppId,string Titl
 
 internal static class ExternalNotificationPolicy
 {
-    // NabyScape's own tray balloons also land in Action Center; never mirror them back.
-    internal static bool IsOwn(string app,string appId)=>new[]{app,appId}.Any(v=>v.Contains("NabyScape",StringComparison.OrdinalIgnoreCase) || v.Contains("LumaIsland",StringComparison.OrdinalIgnoreCase));
+    // Desktopia's own tray balloons also land in Action Center; never mirror them back.
+    internal static bool IsOwn(string app,string appId)=>new[]{app,appId}.Any(v=>v.Contains("Desktopia",StringComparison.OrdinalIgnoreCase) || v.Contains("NabyScape",StringComparison.OrdinalIgnoreCase) || v.Contains("LumaIsland",StringComparison.OrdinalIgnoreCase));
     internal static bool Allowed(Settings s,string app)=>!s.ExternalNotificationMuted.Contains(app,StringComparer.OrdinalIgnoreCase);
     internal static (string Title,string Body) Split(string app,IReadOnlyList<string> lines)
     {

@@ -68,7 +68,7 @@ public sealed partial class OverlayWindow
         assistantCharacterButton.Margin=new Thickness(0);
         assistantCharacterButton.HorizontalAlignment=HorizontalAlignment.Center;
         assistantCharacterButton.VerticalAlignment=VerticalAlignment.Center;
-        assistantCharacterButton.ToolTip="Naby · click to open · Esc to close";
+        assistantCharacterButton.ToolTip="Нажмите для открытия панели";
         assistantCharacterButton.MouseEnter+=(_,_)=>{hoverDelay.Stop();};
         assistantCharacterButton.MouseLeave+=(_,_)=>assistantHover.Stop();
         assistantCharacterButton.PreviewMouseLeftButtonDown+=(_,_)=>assistantHover.Stop();
@@ -121,7 +121,7 @@ public sealed partial class OverlayWindow
     {
         if(assistantCharacterButton==null)return;
         bool enabled=AssistantCharacterAvailable;
-        assistantCharacterButton.ToolTip=app.Assistant.VoiceConnected?"Microphone on · click for voice controls":app.Assistant.WakeListening?app.Assistant.WakeStatus:app.Assistant.Desktop.Sharing?"Screen sharing on · click for controls":"AI companion · hover to meet · click to chat";
+        assistantCharacterButton.ToolTip=app.Assistant.VoiceConnected?"Микрофон включен · нажмите для управления голосом":app.Assistant.WakeListening?"Голосовая активация активна · нажмите для управления":app.Assistant.Desktop.Sharing?"Демонстрация экрана · нажмите для управления":"Нажмите для открытия панели";
         double size=Math.Clamp(app.Settings.Height-4,24,32);assistantCharacterButton.MinHeight=size;assistantCharacterButton.Width=assistantCharacterButton.Height=size;closedAssistant.Width=closedAssistant.Height=size;
         assistantHeaderSpace.Width=size+9;assistantHeaderSpace.Visibility=enabled && !FeedbackVisible?Visibility.Visible:Visibility.Collapsed;
         assistantCharacterHost.HorizontalAlignment=HorizontalAlignment.Center;

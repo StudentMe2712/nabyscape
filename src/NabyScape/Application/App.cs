@@ -46,7 +46,7 @@ public sealed partial class App : Application
     // Shows exactly how an alert appears on the dock and in the notification center.
     internal void SendTestNotification()
     {
-        Notifications.Post(Settings,new("test",Localization.Text("Test notification"),Localization.Text("This is how alerts appear on your dock. Click it, or let it fold away on its own."),null,"NabyScape"),overlay?.ManuallyHidden==true,n=>tray?.ShowBalloonTip(4500,n.Title,n.Detail,Forms.ToolTipIcon.Info),DateTimeOffset.UtcNow);
+        Notifications.Post(Settings,new("test",Localization.Text("Test notification"),Localization.Text("This is how alerts appear on your dock. Click it, or let it fold away on its own."),null,"Desktopia"),overlay?.ManuallyHidden==true,n=>tray?.ShowBalloonTip(4500,n.Title,n.Detail,Forms.ToolTipIcon.Info),DateTimeOffset.UtcNow);
     }
     private void ConfigureDownloads()
     {
@@ -153,7 +153,7 @@ public sealed partial class App : Application
         Brightness=new();Brightness.Start(diagnosticPath==null && Settings.ReactiveFeedback && Settings.BrightnessFeedback);
         Calendar=new(Store);Awake=new();
         Assistant=new(this,diagnosticPath!=null?new AssistantMemoryKeys():null);
-        tray=new Forms.NotifyIcon{Text="NabyScape",Visible=diagnosticPath==null};
+        tray=new Forms.NotifyIcon{Text="Desktopia",Visible=diagnosticPath==null};
         using(var stream=GetResourceStream(new Uri("pack://application:,,,/Assets/island.ico")).Stream) tray.Icon=new System.Drawing.Icon(stream);
         var menu=new Forms.ContextMenuStrip();
         menu.Items.Add(Localization.Text("Open island"),null,(_,_)=>Dispatcher.Invoke(()=>overlay?.Reveal()));
@@ -222,7 +222,7 @@ public sealed partial class App : Application
             else if(Array.Exists(e.Args,a=>a=="--settings"))ShowSettings();
         }
     }
-    private void RefreshAssistantTray(){PrivateDiagnostics.SetServiceState(DiagnosticService.Assistant,!Assistant.Options.Enabled?DiagnosticServiceState.Disabled:Assistant.State==AssistantState.Error?DiagnosticServiceState.Failed:Assistant.Busy?DiagnosticServiceState.Busy:DiagnosticServiceState.Ready);if(tray!=null)tray.Text=Assistant.VoiceConnected?"NabyScape · Voice microphone on":Assistant.WakeListening?"NabyScape · Wake microphone on":Assistant.WakeArmed?"NabyScape · Wake word preparing":"NabyScape";}
+    private void RefreshAssistantTray(){PrivateDiagnostics.SetServiceState(DiagnosticService.Assistant,!Assistant.Options.Enabled?DiagnosticServiceState.Disabled:Assistant.State==AssistantState.Error?DiagnosticServiceState.Failed:Assistant.Busy?DiagnosticServiceState.Busy:DiagnosticServiceState.Ready);if(tray!=null)tray.Text=Assistant.VoiceConnected?"Desktopia · Микрофон включен":Assistant.WakeListening?"Desktopia · Голосовое управление":"Desktopia";}
     public void CheckCountdowns()
     {
         var now=DateTimeOffset.UtcNow;bool changed=false;

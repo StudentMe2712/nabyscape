@@ -21,9 +21,9 @@ public sealed partial class SettingsWindow
         RenderOptions.SetBitmapScalingMode(naby,BitmapScalingMode.HighQuality);row.Children.Add(naby);
         var words=new StackPanel{VerticalAlignment=VerticalAlignment.Center};Grid.SetColumn(words,1);
         TextBlock Word(string text,Brush color){var t=new TextBlock{Text=text,FontFamily=SettingsTheme.Display,FontWeight=FontWeights.Bold,FontSize=17,Foreground=color,LineHeight=17,LineStackingStrategy=LineStackingStrategy.BlockLineHeight};return t;}
-        words.Children.Add(Word("NABY",SettingsTheme.Bone));words.Children.Add(Word("SCAPE",SettingsTheme.Quiet));
+        words.Children.Add(Word("DESK",SettingsTheme.Bone));words.Children.Add(Word("TOPIA",SettingsTheme.Quiet));
         row.Children.Add(words);
-        System.Windows.Automation.AutomationProperties.SetName(row,"NabyScape");
+        System.Windows.Automation.AutomationProperties.SetName(row,"Desktopia");
         return row;
     }
     private FrameworkElement SidebarFooter()

@@ -78,8 +78,9 @@ public sealed partial class OverlayWindow
     private void CheckDesktopMode()
     {
         if(DiagnosticRun || userHidden || hwnd==IntPtr.Zero)return;
-        bool isDesktop=Native.IsDesktopForeground(hwnd);
-        if(!isDesktop)
+        var screen=IslandScreen;
+        bool isClean=Native.IsDesktopClean(hwnd, screen.Bounds);
+        if(!isClean)
         {
             if(Visibility!=Visibility.Collapsed)
             {
@@ -92,6 +93,10 @@ public sealed partial class OverlayWindow
             if(Visibility!=Visibility.Visible)
             {
                 Visibility=Visibility.Visible;
+                if(!tucked && !expanded && !peeking)
+                {
+                    SetTucked(true);
+                }
                 Position();
             }
         }
@@ -103,9 +108,9 @@ public sealed partial class OverlayWindow
         var screen=IslandScreen;double scale=Native.Scale(screen);var b=app.Settings.DockEdge=="Top"?screen.Bounds:screen.WorkingArea;
         double width=app.Settings.Width*scale;
         double centerX=b.Left+(b.Width-width)*app.Settings.Horizontal/100+width/2;
-        bool atTopEdge=pt.Y<=b.Top+4*scale && Math.Abs(pt.X-centerX)<=width/2;
+        bool atTopEdge=pt.Y<=b.Top+Math.Max(2, 4*scale) && Math.Abs(pt.X-centerX)<=Math.Max(width/2+16*scale, 100*scale);
         double pillHeight=app.Settings.Height*scale;
-        bool overPill=pt.Y>=b.Top && pt.Y<=b.Top+pillHeight+8*scale && Math.Abs(pt.X-centerX)<=width/2+10;
+        bool overPill=pt.Y>=b.Top && pt.Y<=b.Top+pillHeight+8*scale && Math.Abs(pt.X-centerX)<=width/2+16*scale;
         bool inside=atTopEdge || overPill || PointerInside() || IsMouseOver;
         if(tucked)
         {

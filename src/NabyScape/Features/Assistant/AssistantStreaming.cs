@@ -43,7 +43,7 @@ internal sealed partial class AssistantTransport
             {
                 // Some compatible servers return JSON even when stream=true. Consume this
                 // same response; never resend an agent request as an automatic fallback.
-                var data=await ReadBounded(response,MaximumBodyBytes,deadline.Token);using var json=JsonDocument.Parse(data);var reply=Parse(provider,json.RootElement,activeTools);
+                var data=await ReadBounded(response,MaximumBodyBytes,deadline.Token);using var json=JsonDocument.Parse(data);var reply=Parse(provider,json.RootElement,activeTools,messages);
                 if(reply.Calls.Count==0 && reply.Text.Length>0)await text(reply.Text,deadline.Token);return reply;
             }
             await using var stream=await response.Content.ReadAsStreamAsync(deadline.Token).ConfigureAwait(false);
@@ -81,7 +81,7 @@ internal sealed partial class AssistantTransport
             }
             if(finish.Length==0)throw new IOException("The voice stream ended before its completion status.");
             var message=new JsonObject{["content"]=content.ToString()};if(calls.Count>0){var values=new JsonArray();foreach(var part in calls.Values)values.Add(new JsonObject{["id"]=part.Id.ToString(),["type"]="function",["function"]=new JsonObject{["name"]=part.Name.ToString(),["arguments"]=part.Args.ToString()}});message["tool_calls"]=values;}
-            var complete=new JsonObject{["choices"]=new JsonArray(new JsonObject{["finish_reason"]=finish,["message"]=message})};using var document=JsonDocument.Parse(complete.ToJsonString());var final=Parse(provider,document.RootElement,activeTools);
+            var complete=new JsonObject{["choices"]=new JsonArray(new JsonObject{["finish_reason"]=finish,["message"]=message})};using var document=JsonDocument.Parse(complete.ToJsonString());var final=Parse(provider,document.RootElement,activeTools,messages);
             if(!early && final.Calls.Count==0 && final.Text.Length>0)await text(final.Text,deadline.Token);return final;
         }
         catch(OperationCanceledException) when(!cancellationToken.IsCancellationRequested){throw new TimeoutException("The voice reply timed out. Check the provider session before retrying.");}

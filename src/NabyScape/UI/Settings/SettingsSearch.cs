@@ -23,7 +23,7 @@ public sealed partial class SettingsWindow
         "Controls"=>new[]{"Hover & swipe","Panel navigation","Drag to Island","Detachable previews","Closed cover gestures","Notch gestures","Global hotkey"},
         "Audio"=>new[]{"Visualizer","Lyrics","Closed media display","Volume mixer","Waveform source","Live signal","Live feedback","Audio behavior","Header wheel"},
         "System"=>new[]{"Clock","Monitor details"},"Launch"=>new[]{"Launch display","Shortcuts"},
-        "Application"=>new[]{"Language & accessibility","Updates","Behavior","Local storage","Private diagnostics","Reset preferences","About NabyScape"},_=>Array.Empty<string>()
+        "Application"=>new[]{"Language & accessibility","Updates","Behavior","Local storage","Private diagnostics","Reset preferences","About Desktopia"},_=>Array.Empty<string>()
     });
     private static SettingsSearchItem[] BuildSettingsSearchIndex()
     {
@@ -60,7 +60,7 @@ public sealed partial class SettingsWindow
         Add("Аудиовизуализатор","Audio","Visualizer","","волна спектр визуализатор эквалайзер частоты");
         Add("Громкость и динамики","Audio","Volume mixer","","звук громкость микшер устройство вывод");
         Add("История буфера обмена","Clipboard","Clipboard history","Save text & image history locally","буфер обмена история копирование вставка");
-        Add("Удаление NabyScape","Application","Local storage","Uninstall NabyScape…","удаление деинсталляция очистить кэш сброс");
+        Add("Удаление Desktopia","Application","Local storage","Uninstall Desktopia…","удаление деинсталляция очистить кэш сброс");
         Add("Длительность фокуса и таймера","Content","Focus sessions","","таймер фокус помодоро минуты перерыв");
         Add("Звуки уведомлений","Notifications","Completion sound","","звук уведомление сигнал таймер окончание");
         Add("Уведомления от других программ","Notifications","Other apps","Show notifications from other apps","уведомления telegram discord claude windows");

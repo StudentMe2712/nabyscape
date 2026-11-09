@@ -18,7 +18,7 @@ internal static class CustomizationProfile
         if(source.Length>262144)throw new InvalidDataException("Layout file is too large.");
         using var document=JsonDocument.Parse(source);
         var root=document.RootElement;
-        if(root.ValueKind!=JsonValueKind.Object || !root.TryGetProperty("format",out var format) || format.GetString()!="luma.layout.v1" || !root.TryGetProperty("values",out var values) || values.ValueKind!=JsonValueKind.Object)throw new InvalidDataException("Choose a NabyScape layout file.");
+        if(root.ValueKind!=JsonValueKind.Object || !root.TryGetProperty("format",out var format) || format.GetString()!="luma.layout.v1" || !root.TryGetProperty("values",out var values) || values.ValueKind!=JsonValueKind.Object)throw new InvalidDataException("Choose a Desktopia layout file.");
         var allKeys=CustomizationKeys.Concat(new[]{"DropReveal","DetachablePreviews","CoverGestures","ControlFill","ControlBorder","SelectionFill","PanelSwipe","Tools"}).ToArray();
         var keys=allKeys.Where(key=>values.TryGetProperty(key,out _)).ToArray();if(keys.Length==0)throw new InvalidDataException("The layout has no customization values.");
         var incoming=JsonSerializer.Deserialize<Settings>(values.GetRawText())??throw new InvalidDataException("Layout is empty.");

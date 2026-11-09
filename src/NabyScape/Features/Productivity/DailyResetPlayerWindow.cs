@@ -77,6 +77,17 @@ internal sealed class DailyResetPlayerWindow : Window
         title.VerticalAlignment = VerticalAlignment.Center;
         header.Children.Add(title);
 
+        var settingsButton = Icons.Button("settings", "Настройки видео / Плейлист", () =>
+        {
+            var playlistWin = new DailyResetPlaylistWindow { Owner = this };
+            playlistWin.Show();
+        }, false, 32);
+        settingsButton.HorizontalAlignment = HorizontalAlignment.Right;
+        settingsButton.VerticalAlignment = VerticalAlignment.Center;
+        settingsButton.Background = Brushes.Transparent;
+        settingsButton.Margin = new Thickness(0, 0, 40, 0);
+        header.Children.Add(settingsButton);
+
         var closeButton = Icons.Button("x", "Закрыть", Close, false, 32);
         closeButton.HorizontalAlignment = HorizontalAlignment.Right;
         closeButton.VerticalAlignment = VerticalAlignment.Center;
@@ -203,48 +214,7 @@ internal sealed class DailyResetPlayerWindow : Window
 
     private static string? ResolveVideoFile()
     {
-        var candidates = new[]
-        {
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Videos"),
-            Path.Combine(Directory.GetCurrentDirectory(), "Videos"),
-            "Videos",
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Videos"),
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "showcase"),
-            Path.Combine(Directory.GetCurrentDirectory(), "Assets", "showcase"),
-            "Assets/showcase"
-        };
-
-        foreach (var dir in candidates)
-        {
-            try
-            {
-                if (Directory.Exists(dir))
-                {
-                    var files = Directory.GetFiles(dir, "*.mp4");
-                    if (files.Length > 0)
-                        return files[Random.Shared.Next(files.Length)];
-                }
-            }
-            catch {}
-        }
-
-        string targetDir = Path.Combine(Directory.GetCurrentDirectory(), "Videos");
-        try
-        {
-            if (!Directory.Exists(targetDir)) Directory.CreateDirectory(targetDir);
-            string demoSrc = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "showcase", "nabyscape-demo.mp4");
-            if (!File.Exists(demoSrc))
-                demoSrc = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "showcase", "nabyscape-demo.mp4");
-            if (File.Exists(demoSrc))
-            {
-                string dest = Path.Combine(targetDir, "reset.mp4");
-                if (!File.Exists(dest)) File.Copy(demoSrc, dest, true);
-                return dest;
-            }
-        }
-        catch {}
-
-        return null;
+        return DailyResetPlaylistService.GetRandomVideo();
     }
 
     private async Task CompleteAsync()

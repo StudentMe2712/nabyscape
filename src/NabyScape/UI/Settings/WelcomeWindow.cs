@@ -26,7 +26,7 @@ internal sealed class WelcomeWindow : Window
     {
         this.app=app;edge=app.Settings.DockEdge;
         widgets=app.Settings.Widgets.ToDictionary(w=>w.Id,w=>w.Enabled);
-        Title="Добро пожаловать в NabyScape";Width=580;Height=620;MinWidth=420;MinHeight=360;
+        Title="Добро пожаловать в Desktopia";Width=580;Height=620;MinWidth=420;MinHeight=360;
         MaxHeight=SystemParameters.WorkArea.Height;MaxWidth=SystemParameters.WorkArea.Width;
         WindowStartupLocation=WindowStartupLocation.CenterScreen;
         Background=Accessibility.HighContrast?SystemColors.WindowBrush:UI.Brush("#111214");
@@ -53,7 +53,7 @@ internal sealed class WelcomeWindow : Window
             var choices=new[]{
                 ("Music","Музыка","Воспроизведение, громкость, звук и треки"),
                 ("Productivity","Продуктивность","Фокус, таймер, заметки, задачи и перезагрузка дня"),
-                ("Custom","Рекомендуемый","Полный набор возможностей NabyScape по умолчанию")
+                ("Custom","Рекомендуемый","Полный набор возможностей Desktopia по умолчанию")
             };
             foreach(var choice in choices)
             {

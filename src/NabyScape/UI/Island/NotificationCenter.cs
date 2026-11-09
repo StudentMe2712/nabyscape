@@ -18,7 +18,7 @@ internal static class NotificationCenterText
         if(age<TimeSpan.FromDays(1))return Localization.Format("{0} h ago",(int)age.TotalHours);
         return at.ToLocalTime().ToString("dd MMM HH:mm",System.Globalization.CultureInfo.CurrentCulture);
     }
-    internal static string Kind(InternalNotice notice)=>notice.Kind=="external"?notice.Source??"App":Localization.Text(notice.Kind switch{"timer"=>"Timer","focus"=>"Focus","downloads"=>"Downloads","updates"=>"Update","reset"=>"Перезагрузка",_=>"NabyScape"});
+    internal static string Kind(InternalNotice notice)=>notice.Kind=="external"?notice.Source??"App":Localization.Text(notice.Kind switch{"timer"=>"Timer","focus"=>"Focus","downloads"=>"Downloads","updates"=>"Update","reset"=>"Перезагрузка",_=>"Desktopia"});
     internal static string Icon(string kind)=>kind switch{"timer"=>"timer","focus"=>"focus","downloads"=>"folder","updates"=>"settings","reset"=>"activity",_=>"bell"};
 }
 

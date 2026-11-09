@@ -36,10 +36,33 @@ internal sealed class DailyResetView : Border
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
         var info = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+
+        var headerRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+
         var title = UI.Heading("Перезагрузка дня", 16);
         title.FontWeight = FontWeights.Bold;
         title.Foreground = UI.Brush("#F0EDE8");
-        info.Children.Add(title);
+        headerRow.Children.Add(title);
+
+        var settingsBtn = Icons.Button("settings", "Настройки видео / Плейлист", OpenPlaylist, false, 28);
+        settingsBtn.Margin = new Thickness(8, 0, 0, 0);
+        settingsBtn.Background = UI.Brush("#261B15");
+        settingsBtn.BorderBrush = UI.Brush("#3E2B20");
+        settingsBtn.BorderThickness = new Thickness(1);
+        settingsBtn.VerticalAlignment = VerticalAlignment.Center;
+        settingsBtn.ToolTip = "Настройки видео / Плейлист";
+        settingsBtn.PreviewMouseLeftButtonDown += (_, e) =>
+        {
+            e.Handled = true;
+            OpenPlaylist();
+        };
+        headerRow.Children.Add(settingsBtn);
+
+        info.Children.Add(headerRow);
 
         statusText = UI.Text("Готово к просмотру", 13);
         statusText.Margin = new Thickness(0, 6, 0, 0);
@@ -74,11 +97,26 @@ internal sealed class DailyResetView : Border
 
         MouseLeftButtonDown += (_, e) =>
         {
+            if (e.OriginalSource is DependencyObject dep)
+            {
+                var cur = dep;
+                while (cur != null && !ReferenceEquals(cur, this))
+                {
+                    if (cur is Button) return;
+                    cur = VisualTreeHelper.GetParent(cur);
+                }
+            }
             OpenPlayer();
             e.Handled = true;
         };
 
         Loaded += (_, _) => RefreshStatus();
+    }
+
+    private void OpenPlaylist()
+    {
+        var playlistWindow = new DailyResetPlaylistWindow();
+        playlistWindow.Show();
     }
 
     internal void RefreshStatus()

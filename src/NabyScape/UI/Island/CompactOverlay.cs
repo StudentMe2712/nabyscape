@@ -13,7 +13,7 @@ namespace NabyScape;
 public sealed partial class OverlayWindow
 {
     private bool peeking;
-    private string activePage="media";
+    private string activePage="tasks";
     private readonly Dictionary<string,FrameworkElement> compactPages=new();
     private readonly Dictionary<string,Button> compactTabs=new();
     private readonly Grid compactPageHost=new(),peekPanel=new(),timelinePanel=new();
@@ -40,14 +40,24 @@ public sealed partial class OverlayWindow
     }
     internal bool IsPeeking=>peeking;
     internal string ActivePage=>activePage;
-    private static string PageFor(string widget)=>widget switch{"tasks"=>"tasks","reset"=>"reset","media"=>"media","focus"=>"focus","timer"=>"timer","notes"=>"notes","system"=>"system",_=>"media"};
+    private static readonly string[] OrderedSections = { "tasks", "notes", "media", "reset", "timer", "focus", "system" };
+    private static string PageFor(string widget)=>widget switch{
+        "tasks"=>"tasks",
+        "notes"=>"notes",
+        "media"=>"media",
+        "reset"=>"reset",
+        "timer"=>"timer",
+        "focus"=>"focus",
+        "system"=>"system",
+        _=>"tasks"
+    };
     private static string PageName(string page)=>page switch{
-        "tasks"=>"Фокус дня",
-        "reset"=>"Перезагрузка",
-        "media"=>"Музыка",
-        "focus"=>"Фокус",
-        "timer"=>"Таймер",
+        "tasks"=>"Задачи",
         "notes"=>"Заметки",
+        "media"=>"Плеер",
+        "reset"=>"Daily Reset",
+        "timer"=>"Таймер",
+        "focus"=>"Помодоро / Фокус",
         "system"=>"Система",
         _=>Localization.Text(page)
     };
@@ -165,20 +175,28 @@ public sealed partial class OverlayWindow
         navigation.ColumnDefinitions.Add(new(){Width=new GridLength(60)});navigation.ColumnDefinitions.Add(new());navigation.ColumnDefinitions.Add(new(){Width=new GridLength(60)});
         var settings=Icons.Button("settings",Localization.Text("Settings"),app.ShowSettings,false,28);settings.Margin=new(4,0,0,0);settings.Background=Brushes.Transparent;
         var trailing=new StackPanel{Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right};trailing.Children.Add(NotificationBell(28));trailing.Children.Add(settings);Grid.SetColumn(trailing,2);navigation.Children.Add(trailing);
-        int categoryCount=Math.Max(1,PanelWidgets.Select(w=>PageFor(w.Id)).Distinct().Count());
+        var activePages = OrderedSections
+            .Where(p => PanelWidgets.Any(w => PageFor(w.Id) == p))
+            .ToList();
+        foreach (var w in PanelWidgets)
+        {
+            string p = PageFor(w.Id);
+            if (!activePages.Contains(p)) activePages.Add(p);
+        }
+        int categoryCount = Math.Max(1, activePages.Count);
         var tabRow=new System.Windows.Controls.Primitives.UniformGrid{Columns=categoryCount,Rows=1,Width=categoryCount*18,HorizontalAlignment=HorizontalAlignment.Center};var navScroll=new ScrollViewer{Content=tabRow,HorizontalScrollBarVisibility=ScrollBarVisibility.Hidden,VerticalScrollBarVisibility=ScrollBarVisibility.Disabled,HorizontalContentAlignment=HorizontalAlignment.Center};Grid.SetColumn(navScroll,1);KeyboardNavigation.SetDirectionalNavigation(tabRow,KeyboardNavigationMode.Cycle);navScroll.PanningMode=PanningMode.HorizontalOnly;navScroll.ToolTip=Localization.Text("Panel navigation · scroll for more panels");navScroll.PreviewMouseWheel+=(_,e)=>{if(navScroll.ScrollableWidth>0){navScroll.ScrollToHorizontalOffset(navScroll.HorizontalOffset-e.Delta*.5);e.Handled=true;}};navigation.Children.Add(navScroll);body.Children.Add(navigation);body.Children.Add(compactPageHost);
         bodyReflow.Add(()=>
         {
             navigation.Margin=new(0,0,0,app.Settings.SectionGap);tabRow.Width=categoryCount*18;
         });
-        foreach(string page in PanelWidgets.Select(w=>PageFor(w.Id)).Distinct())
+        foreach(string page in activePages)
         {
             FrameworkElement view;if(page==activePage)view=BuildCompactPage(page);else{view=new Border();pendingCompactPages.Add(page);}view.Visibility=Visibility.Collapsed;compactPages[page]=view;compactPageHost.Children.Add(view);
             var tab=UI.Button(PageName(page),()=>SelectPage(page));tab.Padding=new(8,6,8,6);tab.FontSize=10.5;tab.MinHeight=30;tab.Margin=new(0,0,4,0);tab.Tag=new CornerRadius(15);StyleCategory(tab,page);compactTabs[page]=tab;tabRow.Children.Add(tab);
         }
-        if(compactPages.Count==0){var empty=UI.Caption("Enable widgets in Settings.",12,UI.Muted);compactPages["media"]=empty;compactPageHost.Children.Add(empty);}
+        if(compactPages.Count==0){var empty=UI.Caption("Enable widgets in Settings.",12,UI.Muted);compactPages["tasks"]=empty;compactPageHost.Children.Add(empty);}
         var mixer=new Border{Visibility=Visibility.Collapsed};pendingCompactPages.Add("mixer");compactPages["mixer"]=mixer;compactPageHost.Children.Add(mixer);
-        if(!compactPages.ContainsKey(activePage))activePage=compactPages.Keys.FirstOrDefault()??"media";
+        if(!compactPages.ContainsKey(activePage))activePage=compactPages.Keys.FirstOrDefault()??"tasks";
         SelectPage(activePage,false);
     }
     internal void SelectPage(string page,bool animate=true)

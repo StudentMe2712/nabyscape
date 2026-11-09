@@ -12,9 +12,9 @@
     <RootNamespace>NabyScape</RootNamespace>
     <Version>2.26.1</Version>
     <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
-    <Title>NabyScape</Title>
-    <Product>NabyScape</Product>
-    <Company>NabyScape</Company>
+    <Title>Desktopia</Title>
+    <Product>Desktopia</Product>
+    <Company>Desktopia</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/BillyNabil/nabyscape</RepositoryUrl>
     <!-- WPF owns DPI awareness; WinForms is used only for Screen and NotifyIcon. -->

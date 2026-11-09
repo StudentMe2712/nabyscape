@@ -49,7 +49,7 @@ public sealed partial class SettingsWindow
         options.Children.Add(Check("Показывать в часы тишины",s.ExternalNotificationQuietHours,v=>s.ExternalNotificationQuietHours=v));
         options.Children.Add(appsLabel);options.Children.Add(apps);
         page.Children.Add(Section("Сторонние приложения",enable,status,privacy,options,
-            UI.Text("NabyScape считывает системные уведомления от мессенджеров и других приложений Windows, проверяя новые каждые 1.5 сек. Уведомления хранятся только в течение текущей сессии.",11,UI.Muted)));
+            UI.Text("Desktopia считывает системные уведомления от мессенджеров и других приложений Windows, проверяя новые каждые 1.5 сек. Уведомления хранятся только в течение текущей сессии.",11,UI.Muted)));
         void Changed()=>Dispatcher.BeginInvoke(Refresh);
         if(app.ExternalNotifications is {} watcher){watcher.StatusChanged+=Changed;status.Unloaded+=(_,_)=>watcher.StatusChanged-=Changed;}
         Refresh();if(s.ExternalNotifications)LoadApps();

@@ -12,7 +12,7 @@ namespace NabyScape;
 internal static class Installer
 {
     internal static string InstallDirectory=>InstallPaths.Current;
-    internal static string ShortcutPath=>Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs),"NabyScape.lnk");
+    internal static string ShortcutPath=>Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs),"Desktopia.lnk");
     private const string UninstallKey=InstallPaths.RegistryKey;
     public static void Run(string[] args)
     {
@@ -28,9 +28,9 @@ internal static class Installer
     }
     internal static Window CreateWindow(string[] args)
     {
-        var window=new Window{Title="Install NabyScape · "+RuntimePlatform.Rid,Width=620,Height=535,ResizeMode=ResizeMode.NoResize,WindowStartupLocation=WindowStartupLocation.CenterScreen};
+        var window=new Window{Title="Install Desktopia · "+RuntimePlatform.Rid,Width=620,Height=535,ResizeMode=ResizeMode.NoResize,WindowStartupLocation=WindowStartupLocation.CenterScreen};
         window.Icon=System.Windows.Media.Imaging.BitmapFrame.Create(new Uri("pack://application:,,,/Assets/island.ico"));window.SourceInitialized+=(_,_)=>Native.DarkTitleBar(window);
-        var panel=new StackPanel{Margin=new(36)};panel.Children.Add(UI.Text("NabyScape",36,UI.Brush("#B4F272")));panel.Children.Add(UI.Text("A little space. More possibilities.",15,UI.Muted));
+        var panel=new StackPanel{Margin=new(36)};panel.Children.Add(UI.Text("Desktopia",36,UI.Brush("#B4F272")));panel.Children.Add(UI.Text("A little space. More possibilities.",15,UI.Muted));
         panel.Children.Add(new Border{Height=26});panel.Children.Add(UI.Text("Music, focus, and your everyday tools — always close.\n\nInstalls for this Windows user only. Choose your folder and startup preference below.",14));
         var folderLabel=UI.Text("Install folder",12,UI.Muted);folderLabel.Margin=new(0,20,0,6);panel.Children.Add(folderLabel);
         string suggested=string.Equals(InstallDirectory,InstallPaths.Legacy,StringComparison.OrdinalIgnoreCase)?InstallPaths.Default:InstallDirectory;
@@ -38,13 +38,13 @@ internal static class Installer
         var row=new DockPanel{Margin=new(0,0,0,6)};
         var browse=UI.Button("Browse…",()=>
         {
-            var picker=new OpenFolderDialog{Title="Choose where to install NabyScape"};
+            var picker=new OpenFolderDialog{Title="Choose where to install Desktopia"};
             if(picker.ShowDialog(window)==true)folder.Text=string.Equals(Path.GetFileName(picker.FolderName),"NabyScape",StringComparison.OrdinalIgnoreCase)?picker.FolderName:Path.Combine(picker.FolderName,"NabyScape");
         });DockPanel.SetDock(browse,Dock.Right);row.Children.Add(browse);row.Children.Add(folder);panel.Children.Add(row);
         var state=UI.Text("Choose a location you can write to. Your personal settings are kept separately.",11,UI.Muted);state.Margin=new(0,0,0,12);panel.Children.Add(state);
-        var startupChoice=new CheckBox{Content="Start NabyScape with Windows",IsChecked=HasSavedPreferences?StartupService.Enabled():FactoryDefaults.Create().AutoStart,Margin=new(0,0,0,8)};panel.Children.Add(startupChoice);
-        var launch=new CheckBox{Content="Open NabyScape after installation",IsChecked=true};panel.Children.Add(launch);
-        var button=UI.Button("Install NabyScape",()=>{},true);button.Click+=(_,_)=>
+        var startupChoice=new CheckBox{Content="Start Desktopia with Windows",IsChecked=HasSavedPreferences?StartupService.Enabled():FactoryDefaults.Create().AutoStart,Margin=new(0,0,0,8)};panel.Children.Add(startupChoice);
+        var launch=new CheckBox{Content="Open Desktopia after installation",IsChecked=true};panel.Children.Add(launch);
+        var button=UI.Button("Install Desktopia",()=>{},true);button.Click+=(_,_)=>
         {
             button.IsEnabled=false;
             try {string target=InstallPaths.Validate(folder.Text.Trim());Install(target,startupChoice.IsChecked==true);if(launch.IsChecked==true)Launch(target);window.Close();}
@@ -61,7 +61,7 @@ internal static class Installer
         {
             using(process)
             {
-                try {if(process.Id!=Environment.ProcessId && new[]{target,previous}.Any(folder=>new[]{"LumaIsland.exe","BillyNabilaIsland.exe","NabyScape.exe","NabyScape.UI.exe","NabyScape.Core.exe"}.Any(name=>string.Equals(process.MainModule?.FileName,Path.Combine(folder,name),StringComparison.OrdinalIgnoreCase))))throw new IOException("Quit NabyScape from the system tray before updating.");}
+                try {if(process.Id!=Environment.ProcessId && new[]{target,previous}.Any(folder=>new[]{"LumaIsland.exe","BillyNabilaIsland.exe","NabyScape.exe","NabyScape.UI.exe","NabyScape.Core.exe"}.Any(name=>string.Equals(process.MainModule?.FileName,Path.Combine(folder,name),StringComparison.OrdinalIgnoreCase))))throw new IOException("Quit Desktopia from the system tray before updating.");}
                 catch(System.ComponentModel.Win32Exception) { }
             }
         }
@@ -84,11 +84,11 @@ internal static class Installer
         {
             var type=Type.GetTypeFromProgID("WScript.Shell") ?? throw new IOException("The Windows shortcut service is unavailable.");
             shell=Activator.CreateInstance(type);dynamic dynamicShell=shell!;shortcut=dynamicShell.CreateShortcut(ShortcutPath);dynamic link=shortcut;
-            link.TargetPath=executable;link.WorkingDirectory=target;link.Description="NabyScape for Windows";link.IconLocation=executable+",0";link.Save();
-            object uninstallLink=dynamicShell.CreateShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs),"Uninstall NabyScape.lnk"));
-            try{dynamic uninstall=uninstallLink;uninstall.TargetPath=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System),@"WindowsPowerShell\v1.0\powershell.exe");uninstall.Arguments="-NoProfile -ExecutionPolicy Bypass -File \""+Path.Combine(target,"Uninstall.ps1")+"\"";uninstall.WorkingDirectory=target;uninstall.Description="Remove NabyScape and optionally all downloaded speech models and personal data";uninstall.IconLocation=executable+",0";uninstall.Save();}
+            link.TargetPath=executable;link.WorkingDirectory=target;link.Description="Desktopia for Windows";link.IconLocation=executable+",0";link.Save();
+            object uninstallLink=dynamicShell.CreateShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs),"Uninstall Desktopia.lnk"));
+            try{dynamic uninstall=uninstallLink;uninstall.TargetPath=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System),@"WindowsPowerShell\v1.0\powershell.exe");uninstall.Arguments="-NoProfile -ExecutionPolicy Bypass -File \""+Path.Combine(target,"Uninstall.ps1")+"\"";uninstall.WorkingDirectory=target;uninstall.Description="Remove Desktopia and optionally all downloaded speech models and personal data";uninstall.IconLocation=executable+",0";uninstall.Save();}
             finally{if(Marshal.IsComObject(uninstallLink))Marshal.FinalReleaseComObject(uninstallLink);}
-            foreach(string legacyName in new[]{"Luma Island.lnk","BillyNabila Island.lnk"})
+            foreach(string legacyName in new[]{"NabyScape.lnk","Luma Island.lnk","BillyNabila Island.lnk"})
             {
             string legacyShortcut=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs),legacyName);
             if(File.Exists(legacyShortcut))
@@ -101,7 +101,7 @@ internal static class Installer
         }
         finally {if(shortcut!=null)Marshal.FinalReleaseComObject(shortcut);if(shell!=null)Marshal.FinalReleaseComObject(shell);}
         using var key=Registry.CurrentUser.CreateSubKey(UninstallKey);
-        key.SetValue("DisplayName","NabyScape");key.SetValue("DisplayVersion",typeof(App).Assembly.GetName().Version!.ToString(3));key.SetValue("Publisher","NabyScape");key.SetValue("InstallLocation",target);key.SetValue("DisplayIcon",executable);
+        key.SetValue("DisplayName","Desktopia");key.SetValue("DisplayVersion",typeof(App).Assembly.GetName().Version!.ToString(3));key.SetValue("Publisher","Desktopia");key.SetValue("InstallLocation",target);key.SetValue("DisplayIcon",executable);
         key.SetValue("UninstallString","powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File \""+Path.Combine(target,"Uninstall.ps1")+"\"");
         key.SetValue("QuietUninstallString","powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File \""+Path.Combine(target,"Uninstall.ps1")+"\" -Quiet");
         key.SetValue("NoModify",1,RegistryValueKind.DWord);key.SetValue("NoRepair",1,RegistryValueKind.DWord);key.SetValue("EstimatedSize",(int)(new FileInfo(executable).Length/1024),RegistryValueKind.DWord);
@@ -147,7 +147,7 @@ internal static class Installer
     {
         var process=RuntimeInformation.ProcessArchitecture;var system=RuntimeInformation.OSArchitecture;
         if(process is not (Architecture.X64 or Architecture.Arm64) || system is not (Architecture.X64 or Architecture.Arm64) || process==Architecture.Arm64 && system!=Architecture.Arm64)
-            throw new PlatformNotSupportedException("Use the NabyScape setup matching your Windows architecture (x64 or ARM64).");
+            throw new PlatformNotSupportedException("Use the Desktopia setup matching your Windows architecture (x64 or ARM64).");
         string name=Path.GetFileName(source);
         foreach(string rid in new[]{"win-x64","win-arm64"})
             if(name.Contains(rid,StringComparison.OrdinalIgnoreCase) && rid!=RuntimePlatform.Rid)throw new IOException("The setup filename does not match its executable architecture. Download the correct official setup.");

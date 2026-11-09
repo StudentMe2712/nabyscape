@@ -20,7 +20,7 @@ public sealed partial class SettingsWindow
         UI.LocalizedName(scale, "Размер текста");
         var contrast = new CheckBox { Content = UI.Caption("Высокая контрастность"), IsChecked = settings.AccessibilityHighContrast };
         UI.LocalizedName(contrast, "Высокая контрастность");
-        var notice = UI.Caption("Сохраните настройки, затем перезапустите NabyScape для их применения.", 12, UI.Muted);
+        var notice = UI.Caption("Сохраните настройки, затем перезапустите Desktopia для их применения.", 12, UI.Muted);
         Accessibility.Live(notice);
         var save = UI.CaptionButton("Сохранить параметры", () =>
         {
@@ -33,7 +33,7 @@ public sealed partial class SettingsWindow
             {
                 app.Store.Save("settings", settings);
                 app.ChangeSettings();
-                Accessibility.Announce(notice, Localization.Text("Сохранено. Перезапустите NabyScape для применения настроек языка и масштаба текста."));
+                Accessibility.Announce(notice, Localization.Text("Сохранено. Перезапустите Desktopia для применения настроек языка и масштаба текста."));
             }
             catch (Exception ex)
             {

@@ -157,7 +157,7 @@ internal sealed partial class AssistantTransport : IAssistantTransport, IDisposa
             try
             {
                 using var document = JsonDocument.Parse(buffer.ToArray(), new JsonDocumentOptions { MaxDepth = 64 });
-                return Parse(provider, document.RootElement, activeTools);
+                return Parse(provider, document.RootElement, activeTools, messages);
             }
             catch (Exception ex) when (ex is JsonException or InvalidOperationException or KeyNotFoundException or FormatException)
             { throw new IOException("The provider returned an invalid or unsupported response."); }
@@ -363,7 +363,7 @@ internal sealed partial class AssistantTransport : IAssistantTransport, IDisposa
     private static string Get(JsonElement element, string name) => element.TryGetProperty(name, out var item) && item.ValueKind == JsonValueKind.String ? item.GetString()! : "";
     private static JsonElement ReadArray(JsonElement element, string name) => element.TryGetProperty(name, out var item) && item.ValueKind == JsonValueKind.Array ? item : throw new JsonException();
 
-    private static AssistantReply Parse(AssistantProvider provider, JsonElement root, IReadOnlyList<AssistantTool> tools)
+    private static AssistantReply Parse(AssistantProvider provider, JsonElement root, IReadOnlyList<AssistantTool> tools, IReadOnlyList<AssistantMessage>? messages = null)
     {
         string protocol=provider.Protocol;
         if (root.ValueKind != JsonValueKind.Object || root.TryGetProperty("error", out _)) throw new JsonException();
@@ -375,6 +375,8 @@ internal sealed partial class AssistantTransport : IAssistantTransport, IDisposa
             if (calls.Count >= MaximumCalls || calls.Any(c => c.Id == id) || !tools.Any(t => t.Name == name)) throw new JsonException();
             calls.Add(call);
         }
+        int promptTokens = 0, completionTokens = 0, totalTokens = 0;
+        int GetInt(JsonElement el, string prop) => el.TryGetProperty(prop, out var v) && v.ValueKind == JsonValueKind.Number && v.TryGetInt32(out int n) ? n : 0;
         if (protocol == "ChatCompletions")
         {
             var choices = ReadArray(root, "choices"); if (choices.GetArrayLength() == 0) throw new JsonException();
@@ -389,6 +391,12 @@ internal sealed partial class AssistantTransport : IAssistantTransport, IDisposa
             AddText(Get(message, "refusal"));
             if (message.TryGetProperty("tool_calls", out var toolCalls) && toolCalls.ValueKind != JsonValueKind.Null)
                 foreach (var call in toolCalls.EnumerateArray()) { if (Get(call, "type") != "function") throw new JsonException(); var function = call.GetProperty("function"); AddCall(Get(call, "id"), Get(function, "name"), Get(function, "arguments")); }
+            if (root.TryGetProperty("usage", out var usage) && usage.ValueKind == JsonValueKind.Object)
+            {
+                promptTokens = GetInt(usage, "prompt_tokens");
+                completionTokens = GetInt(usage, "completion_tokens");
+                totalTokens = GetInt(usage, "total_tokens");
+            }
         }
         else if (protocol == "Responses")
         {
@@ -402,6 +410,14 @@ internal sealed partial class AssistantTransport : IAssistantTransport, IDisposa
                 else if (type == "function_call") AddCall(Get(item, "call_id"), Get(item, "name"), Get(item, "arguments"));
                 else if (type != "reasoning" && !ReadMedia(item,provider,files)) throw new JsonException();
             }
+            if (root.TryGetProperty("usage", out var usage) && usage.ValueKind == JsonValueKind.Object)
+            {
+                promptTokens = GetInt(usage, "input_tokens");
+                if (promptTokens == 0) promptTokens = GetInt(usage, "prompt_tokens");
+                completionTokens = GetInt(usage, "output_tokens");
+                if (completionTokens == 0) completionTokens = GetInt(usage, "completion_tokens");
+                totalTokens = GetInt(usage, "total_tokens");
+            }
         }
         else if (protocol == "Anthropic")
         {
@@ -413,6 +429,12 @@ internal sealed partial class AssistantTransport : IAssistantTransport, IDisposa
                 continuation.Add(item.Clone());
                 if (type == "text") AddText(Get(item, "text"));
                 else if (type == "tool_use") AddCall(Get(item, "id"), Get(item, "name"), item.GetProperty("input").GetRawText());
+            }
+            if (root.TryGetProperty("usage", out var usage) && usage.ValueKind == JsonValueKind.Object)
+            {
+                promptTokens = GetInt(usage, "input_tokens");
+                completionTokens = GetInt(usage, "output_tokens");
+                totalTokens = promptTokens + completionTokens;
             }
         }
         else
@@ -430,8 +452,25 @@ internal sealed partial class AssistantTransport : IAssistantTransport, IDisposa
                 }
                 else if (!part.TryGetProperty("text", out _) && !ReadMedia(part,provider,files)) throw new JsonException();
             }
+            if (root.TryGetProperty("usageMetadata", out var usage) && usage.ValueKind == JsonValueKind.Object)
+            {
+                promptTokens = GetInt(usage, "promptTokenCount");
+                completionTokens = GetInt(usage, "candidatesTokenCount");
+                totalTokens = GetInt(usage, "totalTokenCount");
+            }
         }
         if (text.Length == 0 && calls.Count == 0 && files.Count==0 || continuation.Count > 128) throw new JsonException();
-        return new AssistantReply(text.ToString(), calls, continuation.Count == 0 ? null : continuation,files.Count==0?null:files);
+        if (totalTokens == 0 && promptTokens == 0 && completionTokens == 0)
+        {
+            int messageChars = messages != null ? messages.Sum(m => m.Text.Length + (m.Attachments?.Sum(a => a.Text?.Length ?? 0) ?? 0)) : 0;
+            promptTokens = messageChars / 4;
+            completionTokens = text.Length / 4;
+            totalTokens = promptTokens + completionTokens;
+        }
+        else if (totalTokens == 0)
+        {
+            totalTokens = promptTokens + completionTokens;
+        }
+        return new AssistantReply(text.ToString(), calls, continuation.Count == 0 ? null : continuation, files.Count == 0 ? null : files, promptTokens, completionTokens, totalTokens);
     }
 }

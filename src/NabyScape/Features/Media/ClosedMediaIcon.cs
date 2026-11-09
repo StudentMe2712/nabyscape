@@ -46,7 +46,7 @@ public sealed partial class OverlayWindow
                 closedTitleWave.Visibility=waveform?Visibility.Visible:Visibility.Collapsed;summary.Visibility=waveform?Visibility.Collapsed:Visibility.Visible;
             }
         }
-        compact.ToolTip=waveform?app.Media.Title+" · click to open · Esc to close":"Click to open · Esc to close";
+        compact.ToolTip=waveform?app.Media.Title:null;
         if(changed)ConfigureLiveActivity();
         return waveform;
     }

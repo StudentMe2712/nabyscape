@@ -33,7 +33,7 @@ public sealed partial class SettingsWindow
     {
         var grid=new Grid();grid.ColumnDefinitions.Add(new());grid.ColumnDefinitions.Add(new(){Width=GridLength.Auto});
         var text=new StackPanel{VerticalAlignment=VerticalAlignment.Center};
-        var eyebrow=UI.Caption("ДОБРО ПОЖАЛОВАТЬ В NABYSCAPE",11);eyebrow.FontFamily=SettingsTheme.Display;eyebrow.FontWeight=FontWeights.Bold;eyebrow.Foreground=SettingsTheme.Lime;text.Children.Add(eyebrow);
+        var eyebrow=UI.Caption("ДОБРО ПОЖАЛОВАТЬ В DESKTOPIA",11);eyebrow.FontFamily=SettingsTheme.Display;eyebrow.FontWeight=FontWeights.Bold;eyebrow.Foreground=SettingsTheme.Lime;text.Children.Add(eyebrow);
         var title=UI.Caption("Настройте островок под себя.",30);title.FontFamily=SettingsTheme.Display;title.FontWeight=FontWeights.Bold;title.Foreground=SettingsTheme.Bone;title.Margin=new(0,8,0,8);text.Children.Add(title);
         var body=UI.Caption("Выберите раздел ниже или воспользуйтесь быстрой настройкой. Все изменения сохраняются автоматически.",13);body.Foreground=SettingsTheme.Quiet;body.MaxWidth=420;body.HorizontalAlignment=HorizontalAlignment.Left;text.Children.Add(body);
         var setup=UI.CaptionButton("Быстрая настройка",app.ShowWelcome,true);setup.Padding=new(18,9,18,9);setup.Tag=new CornerRadius(18);

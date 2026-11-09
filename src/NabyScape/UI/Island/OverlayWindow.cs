@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -47,7 +48,7 @@ public sealed partial class OverlayWindow : Window
     internal bool DiagnosticRun {get;set;}
     public OverlayWindow(App app)
     {
-        this.app=app;Title="NabyScape";WindowStyle=WindowStyle.None;ResizeMode=ResizeMode.NoResize;
+        this.app=app;Title="Desktopia";WindowStyle=WindowStyle.None;ResizeMode=ResizeMode.NoResize;
         AllowsTransparency=true;Background=Brushes.Transparent;ShowInTaskbar=false;Topmost=true;ShowActivated=false;
         FontFamily=new FontFamily("Segoe UI Variable Text, Segoe UI");FontSize=13;UseLayoutRounding=false;SnapsToDevicePixels=false;
         TextOptions.SetTextFormattingMode(this,TextFormattingMode.Display);
@@ -58,9 +59,9 @@ public sealed partial class OverlayWindow : Window
         closedSummaryHost.Child=summary;Grid.SetColumn(closedSummaryHost,1);header.Children.Add(closedSummaryHost);Grid.SetColumn(closedTitleWave,1);header.Children.Add(closedTitleWave);Grid.SetColumn(awakeMark,2);awakeMark.Margin=new(8,0,0,0);awakeMark.ToolTip="Keep awake is active";UI.Named(awakeMark,"Keep awake is active");awakeMark.Visibility=Visibility.Collapsed;header.Children.Add(awakeMark);Grid.SetColumn(compactClock,4);compactClock.Margin=new(12,0,0,0);compactClock.FontWeight=FontWeights.SemiBold;header.Children.Add(compactClock);
         compactClock.Visibility=Visibility.Collapsed;idleDate.Visibility=Visibility.Collapsed;summary.Visibility=Visibility.Collapsed;closedSummaryHost.Visibility=Visibility.Collapsed;closedTitleWave.Visibility=Visibility.Collapsed;awakeMark.Visibility=Visibility.Collapsed;activity.Visibility=Visibility.Collapsed;closedCover.Visibility=Visibility.Collapsed;
         compact=new Button{Content=header,Padding=new(14,0,14,0),Margin=new(0),Background=Brushes.Transparent,BorderThickness=new(0),HorizontalContentAlignment=HorizontalAlignment.Stretch,HorizontalAlignment=HorizontalAlignment.Center,VerticalAlignment=VerticalAlignment.Top};
-        UI.Named(compact,"Open or close island");compact.ToolTip="Click to open · Esc to close";
+        UI.Named(compact,"Open or close island");
         Motion.Button(compact);
-        compact.Click+=(_,_)=> {if(app.Notifications.Current!=null && !expanded){OpenNotice();return;}if(expanded)Collapse();else{LeaveAssistantPanel();Reveal();}};
+        compact.Click+=(_,_)=> {if(app.Notifications.Current!=null && !expanded){OpenNotice();return;}if(expanded)Collapse();};
         scroll=UI.Scroll(body);scroll.VerticalScrollBarVisibility=ScrollBarVisibility.Hidden;scroll.HorizontalScrollBarVisibility=ScrollBarVisibility.Disabled;scroll.VerticalAlignment=VerticalAlignment.Top;scroll.HorizontalAlignment=HorizontalAlignment.Center;scroll.Visibility=Visibility.Collapsed;scroll.Opacity=0;scroll.RenderTransform=bodySlide;
         root.RenderTransform=tuckSlide;root.MouseLeftButtonDown+=(_,e)=>{if(TuckRequested && !expanded && e.OriginalSource==surface){Reveal();e.Handled=true;}};root.Children.Add(surface);root.Children.Add(visuals);visuals.Children.Add(compact);visuals.Children.Add(scroll);dockHost.Children.Add(root);dockHost.Clip=dockBoundary;Content=dockHost;
         InitializeAssistantIsland(header);Grid.SetColumnSpan(idleDate,header.ColumnDefinitions.Count);header.Children.Add(idleDate);idleDockReady=true;InitializeDockEditing();
@@ -165,22 +166,22 @@ public sealed partial class OverlayWindow : Window
                     var mediaGrid=new Grid();mediaGrid.ColumnDefinitions.Add(new(){Width=GridLength.Auto});mediaGrid.ColumnDefinitions.Add(new());mediaGrid.Children.Add(art);Grid.SetColumn(info,1);mediaGrid.Children.Add(info);
                     previous=Icons.Button("previous",Localization.Text("Previous track"),()=>_=app.Media.Command("previous"),false,42);play=Icons.Button("play",Localization.Text("Play or pause"),()=>_=app.Media.Command("toggle"),true,50);playIcon="";next=Icons.Button("next",Localization.Text("Next track"),()=>_=app.Media.Command("next"),false,42);previous.Background=next.Background=Brushes.Transparent;
                     var transport=UI.Row(previous,play,next);transport.HorizontalAlignment=HorizontalAlignment.Center;transport.Margin=new(0,10,0,2);UI.Named(sessions,Localization.Text("Media session"));sessions.ToolTip=Localization.Text("Choose a media app");sessions.Margin=new(0,6,0,0);
-                    card=UI.Card(Localization.Text("Now playing"),mediaGrid,transport,sessions);break;
+                    card=UI.Card(Settings.Names.GetValueOrDefault("media") ?? "Плеер",mediaGrid,transport,sessions);break;
                 case "volume":
                     UI.Named(volume,"Windows volume");volume.Margin=new(12,0,10,0);mute=Icons.Button("volume","Mute or unmute",()=> {app.Audio.ToggleMute();Update();},false,30);mute.Background=Brushes.Transparent;mute.Padding=new(4);mute.Margin=new(0);muteIcon="";
                     var audioOutput=UI.Button("",OpenAudioMenu);audioOutput.Content=volumeText;audioOutput.MinHeight=28;audioOutput.Padding=new(5);UI.Named(audioOutput,"Audio devices and microphone");var audioRow=new DockPanel();DockPanel.SetDock(mute,Dock.Left);audioRow.Children.Add(mute);DockPanel.SetDock(audioOutput,Dock.Right);audioRow.Children.Add(audioOutput);audioRow.Children.Add(volume);card=UI.Card("Volume",audioRow);break;
-                case "reset":card=UI.Card("Перезагрузка",new DailyResetView(app));break;
+                case "reset":card=UI.Card(Settings.Names.GetValueOrDefault("reset") ?? "Daily Reset",new DailyResetView(app));break;
                 case "voice":card=UI.Card("Voice companion",new AssistantVoiceView(app));break;
                 case "stopwatch":card=UI.Card("Stopwatch",new StopwatchView(app));break;
-                case "timer":small=true;card=UI.Card(Localization.Text("Timer"),new CountdownView(app,false,false));break;
-                case "focus":small=true;card=UI.Card(Localization.Text("Focus"),new CountdownView(app,true,false));break;
+                case "timer":small=true;card=UI.Card(Settings.Names.GetValueOrDefault("timer") ?? "Таймер",new CountdownView(app,false,false));break;
+                case "focus":small=true;card=UI.Card(Settings.Names.GetValueOrDefault("focus") ?? "Помодоро / Фокус",new CountdownView(app,true,false));break;
                 case "clock":small=true;date.Margin=new(0,6,0,2);card=UI.Card("Local time",clock,date);break;
-                case "system":small=true;cpuBar.Foreground=ramBar.Foreground=Brushes.White;cpuBar.Background=ramBar.Background=UI.Brush("#3A3A3C");card=UI.Card(Localization.Text("System"),cpu,cpuBar,ram,ramBar);break;
+                case "system":small=true;cpuBar.Foreground=ramBar.Foreground=Brushes.White;cpuBar.Background=ramBar.Background=UI.Brush("#3A3A3C");card=UI.Card(Settings.Names.GetValueOrDefault("system") ?? "Система",cpu,cpuBar,ram,ramBar);break;
                 case "battery":small=true;card=UI.Card("Battery",battery);batteryCard=card;break;
                 case "shortcuts":
                     var shortcuts=new WrapPanel();foreach(var shortcut in app.Settings.Shortcuts){var button=LaunchButton(shortcut);shortcuts.Children.Add(button);}card=UI.Card("Quick launch",UI.Button("Search commands  ·  Ctrl+K",()=>ShowCommands()),shortcuts);break;
                 case "tools":card=UI.Card(Localization.Text("Tools"),BuildToolsPage());break;
-                default:if(Settings.ToolNames.ContainsKey(widget.Id)){string toolId=widget.Id;card=UI.Card(Settings.ToolNames[toolId],UI.Button("Open "+Settings.ToolNames[toolId],()=>ShowTools(toolId)));}else continue;break;
+                default:if(Settings.ToolNames.ContainsKey(widget.Id)){string toolId=widget.Id;string toolName=Settings.Names.GetValueOrDefault(toolId) ?? Settings.ToolNames[toolId];card=UI.Card(toolName,UI.Button("Open "+toolName,()=>ShowTools(toolId)));}else continue;break;
             }
             card.Width=small?half:full;card.Margin=new(0,0,small?10:0,10);
             if(small)card.MinHeight=widget.Id is "timer" or "focus"?184:120;
@@ -194,6 +195,7 @@ public sealed partial class OverlayWindow : Window
         HideNotice();EndPeekGesture();StopHoverTimers();automaticPreview=false;activityDismiss.Stop();previewKind=activityTitle=activityDetail="";userHidden=false;app.Previews?.SetHidden(false);RememberExternalForeground();visibilityOverride=lastExternalForeground;revealOverride=visibilityOverride!=IntPtr.Zero;environmentHidden=false;SetTucked(false);Show();Position();if(expanded){if(activate)Activate();return;}expanded=true;peeking=false;RefreshNoticeEdge();peekPanel.Visibility=Visibility.Collapsed;compact.IsHitTestVisible=true;Motion.Fade(compact,1,120);Dimensions();
         // The layered HWND stays fixed across all three states; only its alpha contour changes.
         scroll.Visibility=Visibility.Visible;scroll.IsHitTestVisible=true;
+        if(app.Settings.CompactLayout)SelectPage("tasks",false);
         ConfigurePerformance();motion.Go(surface,IslandSurface.SurfaceWidthProperty,expandedWidth,app.Settings.AnimationMs);motion.Go(surface,IslandSurface.SurfaceHeightProperty,expandedHeight,app.Settings.AnimationMs);motion.OnComplete(()=>{});
         motion.Go(surface,IslandSurface.GlassLiftProperty,1,app.Settings.AnimationMs);WakeLiveRendering();
         Motion.Fade(scroll,1,Math.Min(260,app.Settings.AnimationMs));Motion.To(bodySlide,TranslateTransform.YProperty,0,320);

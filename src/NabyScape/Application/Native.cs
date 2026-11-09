@@ -122,6 +122,87 @@ internal static class Native
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     internal static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
+    [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+    private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+    public static bool IsDesktopClean(IntPtr ownHwnd, System.Drawing.Rectangle? screenBounds = null)
+    {
+        try
+        {
+            System.Drawing.Rectangle bounds;
+            if (screenBounds.HasValue)
+            {
+                bounds = screenBounds.Value;
+            }
+            else
+            {
+                Forms.Screen? screen = null;
+                if (ownHwnd != IntPtr.Zero)
+                {
+                    try { screen = Forms.Screen.FromHandle(ownHwnd); } catch { }
+                }
+                screen ??= Forms.Screen.PrimaryScreen ?? Forms.Screen.AllScreens.FirstOrDefault();
+                bounds = screen?.Bounds ?? new System.Drawing.Rectangle(0, 0, 1920, 1080);
+            }
+
+            double screenArea = (double)bounds.Width * bounds.Height;
+            if (screenArea <= 0) return true;
+
+            uint currentPid = (uint)Environment.ProcessId;
+            IntPtr shellWnd = GetShellWindow();
+            IntPtr desktopWnd = GetDesktopWindow();
+            bool clean = true;
+
+            EnumWindowsProc proc = (w, _) =>
+            {
+                if (w == ownHwnd || w == shellWnd || w == desktopWnd) return true;
+
+                GetWindowThreadProcessId(w, out uint pid);
+                if (pid == currentPid) return true;
+
+                if (!IsWindowVisible(w)) return true;
+                if (IsIconic(w)) return true;
+                if (IsCloaked(w)) return true;
+
+                var sb = new StringBuilder(128);
+                GetClassName(w, sb, 128);
+                string cls = sb.ToString();
+                if (cls is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Shell_SecondaryTrayWnd")
+                    return true;
+
+                if (DwmGetWindowAttribute(w, 9, out var r, Marshal.SizeOf<Rect>()) != 0 && !GetWindowRect(w, out r))
+                    return true;
+
+                int interLeft = Math.Max(bounds.Left, r.Left);
+                int interTop = Math.Max(bounds.Top, r.Top);
+                int interRight = Math.Min(bounds.Right, r.Right);
+                int interBottom = Math.Min(bounds.Bottom, r.Bottom);
+                int interWidth = Math.Max(0, interRight - interLeft);
+                int interHeight = Math.Max(0, interBottom - interTop);
+
+                double interArea = (double)interWidth * interHeight;
+                if (interArea > 0.5 * screenArea)
+                {
+                    clean = false;
+                    return false;
+                }
+
+                return true;
+            };
+
+            EnumWindows(proc, IntPtr.Zero);
+            GC.KeepAlive(proc);
+            return clean;
+        }
+        catch
+        {
+            return true;
+        }
+    }
+
     internal static bool IsDesktopForeground(IntPtr ownHwnd)
     {
         var fg = GetForegroundWindow();

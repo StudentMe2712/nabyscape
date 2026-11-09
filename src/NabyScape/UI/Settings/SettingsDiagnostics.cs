@@ -47,7 +47,7 @@ public sealed partial class SettingsWindow
                 {
                     Title=Localization.Text("Экспортировать отчёт диагностики"),
                     Filter=Localization.Text("Отчёт JSON (*.json)|*.json"),DefaultExt=".json",AddExtension=true,
-                    FileName="NabyScape-diagnostics.json",OverwritePrompt=true,CheckPathExists=true
+                    FileName="Desktopia-diagnostics.json",OverwritePrompt=true,CheckPathExists=true
                 };
                 if(dialog.ShowDialog(this)!=true)return;
                 using(var stream=new FileStream(dialog.FileName,FileMode.Create,FileAccess.Write,FileShare.None))
@@ -68,6 +68,6 @@ public sealed partial class SettingsWindow
             UI.Caption("Локальный файл errors.log может содержать подробные данные и никогда не включается в данный отчёт.",11,UI.Muted),
             preview,refresh,copy,export,notice,
             UI.Caption("Восстановление хранилища",13),
-            UI.Caption("Если документ настроек повреждён, он защищается от автоматической перезаписи. Для восстановления закройте NabyScape и сохраните оригинальный JSON файл перед откатом на резервную копию.",11,UI.Muted)));
+            UI.Caption("Если документ настроек повреждён, он защищается от автоматической перезаписи. Для восстановления закройте Desktopia и сохраните оригинальный JSON файл перед откатом на резервную копию.",11,UI.Muted)));
     }
 }

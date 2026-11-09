@@ -26,7 +26,7 @@ public sealed partial class SettingsWindow
             downloadUpdate=UI.CaptionButton("Скачать обновление",()=>{_=app.Updates.Download();}),
             UI.CaptionButton("Отменить",app.Updates.Cancel),
             installUpdate=UI.CaptionButton("Установить и перезапустить",async ()=>{try{await UpdateHandoff.Prepare(app);}catch(Exception ex){updateStatus.Text=ex.Message;app.Store.Log(ex);}}),
-            UI.Caption(OfficialUpdates.IsAutomaticInstallPath(Environment.ProcessPath!)?"Перед установкой создается резервная копия программы и профилей для безопасного восстановления.":OfficialUpdates.IsInstalled(Environment.ProcessPath!)?"Для обновления закройте NabyScape и запустите установщик новой версии.":"Портативная версия: скачайте ZIP-архив и распакуйте с заменой файлов.",11,UI.Muted),
+            UI.Caption(OfficialUpdates.IsAutomaticInstallPath(Environment.ProcessPath!)?"Перед установкой создается резервная копия программы и профилей для безопасного восстановления.":OfficialUpdates.IsInstalled(Environment.ProcessPath!)?"Для обновления закройте Desktopia и запустите установщик новой версии.":"Портативная версия: скачайте ZIP-архив и распакуйте с заменой файлов.",11,UI.Muted),
             UI.Text(UpdateRecovery.Description(),11,UI.Muted),
             restoreUpdate=UI.CaptionButton("Восстановить предыдущую версию",async ()=>
             {

@@ -71,7 +71,7 @@ public sealed partial class Settings
     public bool MonitorNetwork { get; set; }=true;
     public bool MonitorStorage { get; set; }=true;
     public bool MonitorProcesses { get; set; }=true;
-    public static readonly HashSet<string> AllowedWidgets = new(StringComparer.OrdinalIgnoreCase) { "tasks", "reset", "media", "focus", "timer", "notes", "system" };
+    public static readonly HashSet<string> AllowedWidgets = new(StringComparer.OrdinalIgnoreCase) { "tasks", "notes", "media", "reset", "timer", "focus", "system" };
     public List<WidgetSetting> HoverViews { get; set; }=AllowedWidgets.Select(id=>new WidgetSetting{Id=id,Enabled=true}).ToList();
     public bool ClipboardHistory { get; set; }
     public List<WidgetSetting> Tools {get;set;}=ToolNames.Keys.Select(id=>new WidgetSetting{Id=id,Enabled=true}).ToList();
@@ -127,22 +127,22 @@ public sealed partial class Settings
     };
     public static readonly Dictionary<string,string> Names = new()
     {
-        ["tasks"]="Фокус дня",
-        ["reset"]="Перезагрузка дня",
-        ["media"]="Музыка",
-        ["focus"]="Фокус",
-        ["timer"]="Таймер",
+        ["tasks"]="Задачи",
         ["notes"]="Заметки",
+        ["media"]="Плеер",
+        ["reset"]="Daily Reset",
+        ["timer"]="Таймер",
+        ["focus"]="Помодоро / Фокус",
         ["system"]="Система"
     };
     public static List<WidgetSetting> Defaults() => new()
     {
         new() { Id="tasks", Enabled=true },
-        new() { Id="reset", Enabled=true },
-        new() { Id="media", Enabled=true },
-        new() { Id="focus", Enabled=true },
-        new() { Id="timer", Enabled=true },
         new() { Id="notes", Enabled=true },
+        new() { Id="media", Enabled=true },
+        new() { Id="reset", Enabled=true },
+        new() { Id="timer", Enabled=true },
+        new() { Id="focus", Enabled=true },
         new() { Id="system", Enabled=true }
     };
     public void Normalize()

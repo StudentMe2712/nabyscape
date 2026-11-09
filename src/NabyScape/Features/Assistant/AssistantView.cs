@@ -43,6 +43,7 @@ internal sealed partial class AssistantView : UserControl,IDisposable
     private readonly Border statusHost=new(){CornerRadius=new(10),Padding=new(12,9,12,9),Margin=new(0,0,0,10)};
     private bool refreshQueued;
     private string lastFrame="";
+    private string? lastReplyStatus;
     internal TextBox Editor=>input;
     internal AssistantView(App app,bool island=false,Action? close=null)
     {
@@ -57,7 +58,7 @@ internal sealed partial class AssistantView : UserControl,IDisposable
         orb.Width=orb.Height=island?34:40;heading.Children.Add(orb);
         var title=new StackPanel{Margin=new(9,0,0,0),VerticalAlignment=VerticalAlignment.Center};title.Children.Add(UI.Heading(Localization.Text("Naby"),18));context.FontSize=10;context.Margin=new(0,2,0,0);title.Children.Add(context);Grid.SetColumn(title,1);heading.Children.Add(title);
         var headerActions=new StackPanel{Orientation=Orientation.Horizontal,VerticalAlignment=VerticalAlignment.Center};
-        stop=IconAction("Stop session and all microphones","stop",ai.StopSession);clear=IconAction("Clear conversation","trash",ai.Clear);headerActions.Children.Add(stop);headerActions.Children.Add(clear);
+        stop=IconAction("Stop session and all microphones","stop",ai.StopSession);clear=IconAction("Clear conversation","trash",()=>{lastReplyStatus=null;ai.Clear();});headerActions.Children.Add(stop);headerActions.Children.Add(clear);
         if(island && close!=null){closeButton=IconAction("Back to island","back",close);headerActions.Children.Add(closeButton);}
         Grid.SetColumn(headerActions,2);heading.Children.Add(headerActions);Row(heading,0);
         status.MaxHeight=48;status.TextTrimming=TextTrimming.CharacterEllipsis;statusHost.SetResourceReference(Border.BackgroundProperty,"ControlFill");var statusBody=new StackPanel();statusBody.Children.Add(status);statusBody.Children.Add(AssistantRecoveryControls.Build(app));statusHost.Child=statusBody;Row(statusHost,1);
@@ -148,7 +149,16 @@ internal sealed partial class AssistantView : UserControl,IDisposable
         var button=Icons.Button(icon,name,action,primary,32);button.MinWidth=32;button.Margin=new(3,0,0,0);button.Padding=new(0);button.Content=Icons.Create(icon,18,primary?Brushes.Black:Brushes.White);button.HorizontalContentAlignment=HorizontalAlignment.Center;button.VerticalContentAlignment=VerticalAlignment.Center;button.Tag=new CornerRadius(primary?16:8);if(!primary)button.Background=Brushes.Transparent;return button;
     }
     private async System.Threading.Tasks.Task Send()
-    {string text=input.Text.Trim();if(text.Length==0 && ai.DraftFiles.Count==0 || ai.Busy || ai.ImportingFiles)return;int generation=ai.Conversation.Epoch;input.Clear();bool success=await ai.Send(text);if(!success && generation==ai.Conversation.Epoch && input.Text.Length==0)input.Text=text;}
+    {
+        string text=input.Text.Trim();if(text.Length==0 && ai.DraftFiles.Count==0 || ai.Busy || ai.ImportingFiles)return;int generation=ai.Conversation.Epoch;input.Clear();bool success=await ai.Send(text);if(!success && generation==ai.Conversation.Epoch && input.Text.Length==0)input.Text=text;
+        if(success)
+        {
+            lastReplyStatus=$"Запрос завершён · {ai.Conversation.TokenSummary}";
+            status.Text=lastReplyStatus;
+            status.Visibility=Visibility.Visible;
+            statusHost.Visibility=Visibility.Visible;
+        }
+    }
     private void PickFiles()
     {
         var dialog=new Microsoft.Win32.OpenFileDialog{Title="Attach files to Naby",Multiselect=true,CheckFileExists=true,Filter="Supported attachments|*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tif;*.tiff;*.webp;*.pdf;*.mp4;*.webm;*.mov;*.mkv;*.avi;*.mp3;*.wav;*.m4a;*.ogg;*.flac;*.docx;*.pptx;*.xlsx;*.odt;*.txt;*.md;*.csv;*.tsv;*.json;*.xml;*.py;*.cs;*.js;*.ts;*.log|All files|*.*"};
@@ -179,10 +189,23 @@ internal sealed partial class AssistantView : UserControl,IDisposable
         if(syncing)return;syncing=true;
         try
         {
-            AssistantControls.RefreshConnection(connection,ai);context.Text=ai.CaptureSummary;context.ToolTip=ai.SetupSummary;
-            status.Visibility=!ai.Options.Enabled || ai.Provider==null || ai.State!=AssistantState.Idle || ai.ImportingFiles?Visibility.Visible:Visibility.Collapsed;
-            statusHost.Visibility=status.Visibility;status.Foreground=Accessibility.HighContrast?SystemColors.WindowTextBrush:ai.State==AssistantState.Error?UI.Brush("#EAB3AD"):UI.Muted;
-            Accessibility.Announce(status,!ai.Options.Enabled?Localization.Text("Enable your companion in Settings → AI."):Localization.Text(ai.Status.Replace("Configure a realtime endpoint and model in Providers.","Set up voice in Settings → AI.").Replace("in provider settings","in Settings → AI")));
+            AssistantControls.RefreshConnection(connection,ai);
+            string providerName=ai.Provider?.Name??"Desktopia";
+            context.Text=ai.Conversation.Messages.Count>0?$"{providerName} · {ai.Conversation.TokenSummary}":providerName;
+            context.ToolTip=$"{ai.SetupSummary}\n{ai.Conversation.TokenSummary}";
+            if(ai.State==AssistantState.Idle && !string.IsNullOrEmpty(lastReplyStatus))
+            {
+                status.Text=lastReplyStatus;
+                status.Visibility=Visibility.Visible;
+                statusHost.Visibility=Visibility.Visible;
+                status.Foreground=Accessibility.HighContrast?SystemColors.WindowTextBrush:UI.Muted;
+            }
+            else
+            {
+                status.Visibility=!ai.Options.Enabled || ai.Provider==null || ai.State!=AssistantState.Idle || ai.ImportingFiles?Visibility.Visible:Visibility.Collapsed;
+                statusHost.Visibility=status.Visibility;status.Foreground=Accessibility.HighContrast?SystemColors.WindowTextBrush:ai.State==AssistantState.Error?UI.Brush("#EAB3AD"):UI.Muted;
+                Accessibility.Announce(status,!ai.Options.Enabled?Localization.Text("Enable your companion in Settings → AI."):Localization.Text(ai.Status.Replace("Configure a realtime endpoint and model in Providers.","Set up voice in Settings → AI.").Replace("in provider settings","in Settings → AI")));
+            }
             welcomeDescription.Text=Localization.Text(!ai.Options.Enabled?"Enable your companion in AI setup to begin.":!ai.Setup.Chat.Configured?"Connect your provider or Hermes to start chatting.":"Ask a question, attach a file, or switch to voice.");
             stop.Visibility=ai.Busy || ai.ImportingFiles || ai.VoiceConnected || ai.WakeArmed || ai.Desktop.Sharing?Visibility.Visible:Visibility.Collapsed;clear.Visibility=ai.Conversation.Messages.Count>0 || ai.DraftFiles.Count>0?Visibility.Visible:Visibility.Collapsed;
             RefreshSendState();share.IsEnabled=ai.Options.Enabled && (!ai.Busy || ai.Desktop.Sharing);
@@ -202,7 +225,14 @@ internal sealed partial class AssistantView : UserControl,IDisposable
             {
                 var message=history[i];if(message.Role is not ("user" or "assistant") || string.IsNullOrWhiteSpace(message.Text) && message.Attachments is not {Count:>0} || message.Text.StartsWith("Updated shared screen after"))continue;
                 var body=new StackPanel();if(!string.IsNullOrWhiteSpace(message.Text))body.Children.Add(message.Role=="assistant"?AssistantMarkdown.Render(message.Text):UI.Text(message.Text,13));
-                if(message.Attachments!=null)foreach(var file in message.Attachments)body.Children.Add(new AssistantAttachmentView(ai,file));FrameworkElement text=body;text.Margin=message.Role=="user"?new Thickness(12,9,12,9):new Thickness(2,10,2,10);
+                if(message.Attachments!=null)foreach(var file in message.Attachments)body.Children.Add(new AssistantAttachmentView(ai,file));
+                if(message.Role=="assistant" && message.Tokens>0)
+                {
+                    var tokenCaption=UI.Caption($"Токены: {message.Tokens}",10,UI.Muted);
+                    tokenCaption.Margin=new Thickness(0,4,0,0);
+                    body.Children.Add(tokenCaption);
+                }
+                FrameworkElement text=body;text.Margin=message.Role=="user"?new Thickness(12,9,12,9):new Thickness(2,10,2,10);
                 var menu=new ContextMenu();var copy=new MenuItem{Header="Copy message"};copy.Click+=(_,_)=>{try{Clipboard.SetText(message.Text);}catch{}};menu.Items.Add(copy);text.ContextMenu=menu;
                 var bubble=new Border{Child=text,CornerRadius=new(12),Background=Brushes.Transparent,Margin=new(message.Role=="user"?42:0,3,message.Role=="user"?0:12,5)};if(message.Role=="user")bubble.SetResourceReference(Border.BackgroundProperty,"ControlFill");messages.Children.Add(bubble);
                 if(IsLoaded && !app.Settings.ReduceMotion && !restoring){bubble.Opacity=0;Motion.Fade(bubble,1,180);}

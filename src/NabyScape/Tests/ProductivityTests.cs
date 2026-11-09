@@ -203,5 +203,48 @@ public static class ProductivityTests
             Assert(errors==0 && changes==1); service.Note="editable despite disk error"; Assert(changes==1); Assert(!service.Save());
             Assert(errors==1 && changes==1 && service.Note=="editable despite disk error" && !string.IsNullOrEmpty(service.LastError));
         });
+        Check("Productivity: DailyReset playlist loads, persists, formats duration and picks random video",root=>
+        {
+            var testMp4 = Path.Combine(root, "test_video.mp4");
+            File.WriteAllBytes(testMp4, new byte[] { 0, 0, 0, 20, 102, 116, 121, 112 }); // dummy mp4 header
+            var testMkv = Path.Combine(root, "test_clip.mkv");
+            File.WriteAllBytes(testMkv, new byte[] { 26, 69, 223, 163 }); // dummy mkv header
+            var testTxt = Path.Combine(root, "test.txt");
+            File.WriteAllText(testTxt, "not a video");
+
+            var playlist = DailyResetPlaylistService.GetPlaylist();
+            Assert(playlist != null);
+
+            DailyResetPlaylistService.AddFiles(new[] { testMp4, testMkv, testTxt });
+            var updated = DailyResetPlaylistService.GetPlaylist();
+            var addedMp4 = updated.FirstOrDefault(i => i.Path.Equals(testMp4, StringComparison.OrdinalIgnoreCase));
+            var addedMkv = updated.FirstOrDefault(i => i.Path.Equals(testMkv, StringComparison.OrdinalIgnoreCase));
+            var addedTxt = updated.FirstOrDefault(i => i.Path.Equals(testTxt, StringComparison.OrdinalIgnoreCase));
+
+            Assert(addedMp4 != null && addedMp4.Title == "test_video");
+            Assert(addedMkv != null && addedMkv.Title == "test_clip");
+            Assert(addedTxt == null); // .txt must NOT be added
+
+            // Test duration formatting
+            Assert(DailyResetPlaylistService.FormatDuration(TimeSpan.FromSeconds(29)) == "00:29");
+            Assert(DailyResetPlaylistService.FormatDuration(TimeSpan.FromSeconds(135)) == "02:15");
+            Assert(DailyResetPlaylistService.FormatDuration(TimeSpan.FromHours(1).Add(TimeSpan.FromMinutes(4))) == "01:04:00");
+            Assert(DailyResetPlaylistService.FormatDuration(TimeSpan.Zero) == "00:00");
+
+            // Test remove
+            if (addedMp4 != null) DailyResetPlaylistService.Remove(addedMp4);
+            var afterRemove = DailyResetPlaylistService.GetPlaylist();
+            Assert(!afterRemove.Any(i => i.Path.Equals(testMp4, StringComparison.OrdinalIgnoreCase)));
+
+            // Clean up test mkv from playlist
+            if (addedMkv != null) DailyResetPlaylistService.Remove(addedMkv);
+
+            // Random video
+            string? randomVid = DailyResetPlaylistService.GetRandomVideo();
+            if (randomVid != null)
+            {
+                Assert(File.Exists(randomVid));
+            }
+        });
     }
 }

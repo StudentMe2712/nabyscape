@@ -14,6 +14,12 @@ internal sealed class AssistantConversation : IDisposable
     private CancellationTokenSource? current;
     private int busy,epoch;
     private string hermesSession=Guid.NewGuid().ToString("N");
+    public int LastPromptTokens { get; private set; }
+    public int LastCompletionTokens { get; private set; }
+    public int LastTotalTokens { get; private set; }
+    public int ContextTokens { get; private set; }
+    public int EstimatedTokens => messages.Sum(m => m.Text.Length + (m.Attachments?.Sum(a => a.Text?.Length ?? 0) ?? 0)) / 4;
+    public string TokenSummary => LastTotalTokens > 0 ? $"Токены: {LastTotalTokens} (вход: {LastPromptTokens}, ответ: {LastCompletionTokens})" : $"Контекст: {EstimatedTokens} токенов";
     internal bool LastTurnHasActionResults {get;private set;}
     internal bool Busy=>Volatile.Read(ref busy)!=0;
     internal int Epoch=>epoch;
@@ -21,7 +27,7 @@ internal sealed class AssistantConversation : IDisposable
     internal event Action<AssistantMessage>? Added;
     internal AssistantConversation(IAssistantTransport transport)=>this.transport=transport;
     internal void Stop()=>current?.Cancel();
-    internal void Clear(){Stop();epoch++;ResetMessages();hermesSession=Guid.NewGuid().ToString("N");LastTurnHasActionResults=false;}
+    internal void Clear(){Stop();epoch++;ResetMessages();hermesSession=Guid.NewGuid().ToString("N");LastTurnHasActionResults=false;LastPromptTokens=0;LastCompletionTokens=0;LastTotalTokens=0;ContextTokens=0;}
     internal void Record(string role,string text)
     {if(!Busy && text.Length<=16000 && role is "user" or "assistant"){if(messages.Count>48)ResetMessages();Add(new(role,text));}}
     internal void RecordVoiceOutcome(int generation,AssistantCall call,string result)
@@ -70,9 +76,13 @@ internal sealed class AssistantConversation : IDisposable
                 var input=new[]{new AssistantMessage("system",instructions)}.Concat(messages).ToArray();
                 var reply=voiceText==null?await transport.Complete(provider,key,input,tools,run.Token):await transport.CompleteStreaming(provider,key,input,tools,Deliver,voiceProgress,run.Token);
                 run.Token.ThrowIfCancellationRequested();if(generation!=epoch)throw new OperationCanceledException(run.Token);
+                LastPromptTokens=reply.PromptTokens;
+                LastCompletionTokens=reply.CompletionTokens;
+                LastTotalTokens=reply.TotalTokens;
+                ContextTokens=reply.TotalTokens>0?reply.TotalTokens:EstimatedTokens;
                 if(reply.Calls.Count>8)throw new InvalidOperationException("The provider requested too many actions in one reply.");
                 if(reply.Text.Length>64000 || (reply.ProtocolItems?.Sum(p=>(long)p.GetRawText().Length)??0)>AssistantAttachments.MaximumPayload)throw new InvalidOperationException("The reply exceeded the conversation size limit.");
-                Add(new("assistant",reply.Text,Calls:reply.Calls,ProtocolItems:reply.ProtocolItems,Attachments:reply.Attachments));
+                Add(new("assistant",reply.Text,Calls:reply.Calls,ProtocolItems:reply.ProtocolItems,Attachments:reply.Attachments,Tokens:reply.TotalTokens));
                 if(reply.Calls.Count==0)return;
                 foreach(var call in reply.Calls)
                 {

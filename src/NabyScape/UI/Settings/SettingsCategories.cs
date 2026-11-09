@@ -11,7 +11,7 @@ public sealed partial class SettingsWindow
 {
     private static readonly SettingsCategory[] SettingsCategories=
     {
-        new("Home","Начало работы","Settings","Настройте NabyScape под свои предпочтения.","home start setup help beginner"),
+        new("Home","Начало работы","Settings","Настройте Desktopia под свои предпочтения.","home start setup help beginner"),
         new("Appearance","Цвета и тема","Personalize","Форма островка, цвета, материалы и шрифт.","appearance theme warna tampilan font shape glass",new[]{"Shape","Settings material","Color & material","Surface","Controls & outlines","Typography","Text and navigation"}),
         new("Ambience","Подсветка","Personalize","Свечение вокруг островка и реакция на музыку.","ambient ambience cahaya warna glow spread softness light reach closed dock tertutup",new[]{"Ambient light"}),
         new("Layout","Позиция и размер","Dock","Кромка экрана, положение и размеры островка.","position posisi pindah atas bawah kanan kiri monitor size resize ukuran"),
