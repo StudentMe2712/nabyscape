@@ -183,40 +183,62 @@ public sealed partial class OverlayWindow
             string p = PageFor(w.Id);
             if (!activePages.Contains(p)) activePages.Add(p);
         }
-        int categoryCount = Math.Max(1, activePages.Count);
-        var tabRow=new System.Windows.Controls.Primitives.UniformGrid{Columns=categoryCount,Rows=1,Width=categoryCount*18,HorizontalAlignment=HorizontalAlignment.Center};var navScroll=new ScrollViewer{Content=tabRow,HorizontalScrollBarVisibility=ScrollBarVisibility.Hidden,VerticalScrollBarVisibility=ScrollBarVisibility.Disabled,HorizontalContentAlignment=HorizontalAlignment.Center};Grid.SetColumn(navScroll,1);KeyboardNavigation.SetDirectionalNavigation(tabRow,KeyboardNavigationMode.Cycle);navScroll.PanningMode=PanningMode.HorizontalOnly;navScroll.ToolTip=Localization.Text("Panel navigation · scroll for more panels");navScroll.PreviewMouseWheel+=(_,e)=>{if(navScroll.ScrollableWidth>0){navScroll.ScrollToHorizontalOffset(navScroll.HorizontalOffset-e.Delta*.5);e.Handled=true;}};navigation.Children.Add(navScroll);body.Children.Add(navigation);body.Children.Add(compactPageHost);
-        bodyReflow.Add(()=>
+        var tabRow = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+        var navScroll = new ScrollViewer { Content = tabRow, HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, HorizontalContentAlignment = HorizontalAlignment.Center };
+        Grid.SetColumn(navScroll, 1);
+        KeyboardNavigation.SetDirectionalNavigation(tabRow, KeyboardNavigationMode.Cycle);
+        navScroll.PanningMode = PanningMode.HorizontalOnly;
+        navScroll.ToolTip = Localization.Text("Panel navigation · scroll for more panels");
+        navScroll.PreviewMouseWheel += (_, e) => { if (navScroll.ScrollableWidth > 0) { navScroll.ScrollToHorizontalOffset(navScroll.HorizontalOffset - e.Delta * .5); e.Handled = true; } };
+        navigation.Children.Add(navScroll);
+        body.Children.Add(navigation);
+        body.Children.Add(compactPageHost);
+        bodyReflow.Add(() =>
         {
-            navigation.Margin=new(0,0,0,app.Settings.SectionGap);tabRow.Width=categoryCount*18;
+            navigation.Margin = new(0, 0, 0, app.Settings.SectionGap);
         });
-        foreach(string page in activePages)
+        foreach (string page in activePages)
         {
-            FrameworkElement view;if(page==activePage)view=BuildCompactPage(page);else{view=new Border();pendingCompactPages.Add(page);}view.Visibility=Visibility.Collapsed;compactPages[page]=view;compactPageHost.Children.Add(view);
-            var tab=UI.Button(PageName(page),()=>SelectPage(page));tab.Padding=new(8,6,8,6);tab.FontSize=10.5;tab.MinHeight=30;tab.Margin=new(0,0,4,0);tab.Tag=new CornerRadius(15);StyleCategory(tab,page);compactTabs[page]=tab;tabRow.Children.Add(tab);
+            FrameworkElement view; if (page == activePage) view = BuildCompactPage(page); else { view = new Border(); pendingCompactPages.Add(page); } view.Visibility = Visibility.Collapsed; compactPages[page] = view; compactPageHost.Children.Add(view);
+            var tab = UI.Button(PageName(page), () => SelectPage(page));
+            tab.Padding = new Thickness(0);
+            tab.Margin = new Thickness(0);
+            tab.MinHeight = 0;
+            tab.MinWidth = 0;
+            tab.Background = Brushes.Transparent;
+            tab.BorderThickness = new Thickness(0);
+            StyleCategory(tab, page);
+            compactTabs[page] = tab;
+            tabRow.Children.Add(tab);
         }
-        if(compactPages.Count==0){var empty=UI.Caption("Enable widgets in Settings.",12,UI.Muted);compactPages["tasks"]=empty;compactPageHost.Children.Add(empty);}
-        var mixer=new Border{Visibility=Visibility.Collapsed};pendingCompactPages.Add("mixer");compactPages["mixer"]=mixer;compactPageHost.Children.Add(mixer);
-        if(!compactPages.ContainsKey(activePage))activePage=compactPages.Keys.FirstOrDefault()??"tasks";
-        SelectPage(activePage,false);
+        if (compactPages.Count == 0) { var empty = UI.Caption("Enable widgets in Settings.", 12, UI.Muted); compactPages["tasks"] = empty; compactPageHost.Children.Add(empty); }
+        var mixer = new Border { Visibility = Visibility.Collapsed }; pendingCompactPages.Add("mixer"); compactPages["mixer"] = mixer; compactPageHost.Children.Add(mixer);
+        if (!compactPages.ContainsKey(activePage)) activePage = compactPages.Keys.FirstOrDefault() ?? "tasks";
+        SelectPage(activePage, false);
     }
-    internal void SelectPage(string page,bool animate=true)
+    internal void SelectPage(string page, bool animate = true)
     {
         LeaveAssistantPanel();
-        mediaControls?.Close(false);EnsureBody();
+        mediaControls?.Close(false); EnsureBody();
 
-        if(!app.Settings.CompactLayout || commandOpen || !compactPages.ContainsKey(page))return;
-        if(animate && activePage==page && compactPages[page].Visibility==Visibility.Visible)return;
-        FlushNotes();EnsureCompactPage(page);InvalidateSystemMonitor();activePage=page;
-        if(Settings.ToolNames.ContainsKey(page))
+        if (!app.Settings.CompactLayout || commandOpen || !compactPages.ContainsKey(page)) return;
+        if (animate && activePage == page && compactPages[page].Visibility == Visibility.Visible) return;
+        FlushNotes(); EnsureCompactPage(page); InvalidateSystemMonitor(); activePage = page;
+        if (Settings.ToolNames.ContainsKey(page))
         {
-            toolsMode=page;calendarEditing=false;
-            if(toolsContent.Parent is Panel owner)owner.Children.Remove(toolsContent);
-            ((Panel)compactPages[page]).Children.Add(toolsContent);RefreshTools();
+            toolsMode = page; calendarEditing = false;
+            if (toolsContent.Parent is Panel owner) owner.Children.Remove(toolsContent);
+            ((Panel)compactPages[page]).Children.Add(toolsContent); RefreshTools();
         }
-        scroll.VerticalScrollBarVisibility=ScrollBarVisibility.Hidden;
-        foreach(var entry in compactPages){entry.Value.Visibility=entry.Key==page?Visibility.Visible:Visibility.Collapsed;}
+        scroll.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+        foreach (var entry in compactPages) { entry.Value.Visibility = entry.Key == page ? Visibility.Visible : Visibility.Collapsed; }
         UpdateSystemMonitor();
-        foreach(var entry in compactTabs){entry.Value.Background=entry.Key==(page=="mixer"?"media":page)?UI.Brush(app.Settings.SelectionFill):Brushes.Transparent;entry.Value.Foreground=entry.Key==(page=="mixer"?"media":page)?UI.ContrastText(app.Settings.SelectionFill):UI.Muted;StyleCategory(entry.Value,entry.Key,entry.Key==(page=="mixer"?"media":page));}
+        foreach (var entry in compactTabs)
+        {
+            entry.Value.Background = Brushes.Transparent;
+            entry.Value.BorderThickness = new Thickness(0);
+            StyleCategory(entry.Value, entry.Key, entry.Key == (page == "mixer" ? "media" : page));
+        }
         if(compactTabs.TryGetValue(page,out var selectedTab))selectedTab.BringIntoView();
         if(animate)Motion.Enter(compactPages[page],4);
         Dimensions();

@@ -191,11 +191,12 @@ internal sealed class SettingsScene : FrameworkElement
             case "Reset preferences":
                 Keys("Ваши настройки",20,24,128);Line(158,39,196,39);Keys("Резервная копия",208,24,120);Text("Сброс выбранной категории",22,71,12,true);Note("Заметки, задачи и автозапуск сохраняются");break;
             case "Behavior":
-                Text("Вход в Windows",24,23,15,true);Line(163,41,217,41);Text("NabyScape",240,23,15,true);Toggle(244,60,s.AutoStart);Text(s.AutoStart?"Запускать автоматически":"Запуск вручную",24,68,12,false,muted);break;
+                Text("Вход в Windows",24,23,15,true);Line(163,41,217,41);Text("Desktopia",240,23,15,true);Toggle(244,60,s.AutoStart);Text(s.AutoStart?"Запускать автоматически":"Запуск вручную",24,68,12,false,muted);break;
             case "Local storage":
                 Text("Локально на этом ПК",24,21,17,true);Text("Настройки · Заметки · Задачи",24,51,12);Text("Учётная запись не требуется",24,77,11,false,muted);break;
             case "About NabyScape":
-                Text("NabyScape",24,20,23,true);Text("Windows 11 · x64",24,60,12,false,muted);Text("Версия "+typeof(App).Assembly.GetName().Version!.ToString(3),250,31,12);break;
+            case "About Desktopia":
+                Text("Desktopia",24,20,23,true);Text("Windows 11 · x64",24,60,12,false,muted);Text("Версия "+typeof(App).Assembly.GetName().Version!.ToString(3),250,31,12);break;
             case "Language & accessibility":
                 Text("Язык",24,18,12,true);Keys(s.UiLanguage=="es"?"Español":s.UiLanguage=="id"?"Bahasa Indonesia":"Русский",210,12,176);
                 Text("Размер текста",24,55,12,true);Text((s.AccessibilityTextScale*100).ToString("0",CultureInfo.InvariantCulture)+"%",218,55,12);Toggle(350,55,s.AccessibilityHighContrast);Note("Язык · размер текста · контраст");break;

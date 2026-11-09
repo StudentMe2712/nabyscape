@@ -169,7 +169,7 @@ public sealed partial class App : Application
         menu.Items.Add(Localization.Text("Tuck / Return to automatic"),null,(_,_)=>Dispatcher.Invoke(()=>overlay?.ToggleTuck()));
         menu.Items.Add(Localization.Text("Hide / show"),null,(_,_)=>Dispatcher.Invoke(()=>overlay?.ToggleVisibility()));
         menu.Items.Add(new Forms.ToolStripSeparator());
-        menu.Items.Add(Localization.Text("Quit"),null,(_,_)=>Dispatcher.Invoke(Quit));
+        menu.Items.Add(Localization.Text("Exit Desktopia"),null,(_,_)=>Dispatcher.Invoke(Quit));
         tray.ContextMenuStrip=menu;tray.DoubleClick+=(_,_)=>Dispatcher.Invoke(ShowSettings);
         overlay=new OverlayWindow(this);MainWindow=overlay;StartupTrace.Attach(overlay,e.Args,Store.Log);overlay.Show();Previews=new(this,overlay.OpenFeaturePage);
         Assistant.Changed+=RefreshAssistantTray;if(diagnosticPath==null)Assistant.StartBackgroundFeatures();
@@ -207,7 +207,7 @@ public sealed partial class App : Application
         };
         tick.Start();CheckCountdowns();
         if(Store.Warning!=null) Notify("Settings recovered",Store.Warning);
-        if(!Array.Exists(e.Args,a=>a=="--background")) Notify("Second Self готов к работе", "Нажмите на островок для открытия виджетов. Нажмите правой кнопкой на значок в трее для перехода в настройки.");
+        if(!Array.Exists(e.Args,a=>a=="--background")) Notify("Desktopia готова к работе", "Нажмите на островок для открытия виджетов. Нажмите правой кнопкой на значок в трее для перехода в настройки.");
         InitializeRuntimeRecovery();
         PrivateDiagnostics.SetServiceState(DiagnosticService.Application,DiagnosticServiceState.Ready);
         PrivateDiagnostics.Record(DiagnosticStage.Application,DiagnosticCode.Completed,startupClock.Elapsed);

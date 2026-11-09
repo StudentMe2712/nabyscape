@@ -27,7 +27,7 @@ public sealed partial class OverlayWindow
         RefreshCompactOptionalVisibility();
         if(awakeStatus!=null)
         {
-            string detail=app.Awake.Until.HasValue?$"{Math.Max(0,Math.Ceiling((app.Awake.Until.Value-now).TotalMinutes)):0} min remaining":"Until NabyScape quits";
+            string detail=app.Awake.Until.HasValue?$"{Math.Max(0,Math.Ceiling((app.Awake.Until.Value-now).TotalMinutes)):0} min remaining":"Until Desktopia quits";
             awakeStatus.Text=app.Awake.Active?$"Awake · {detail}\n"+(app.Awake.KeepDisplayOn?"Display stays on":"Display can turn off"):"Off · Windows power settings apply";
         }
     }
@@ -43,7 +43,7 @@ public sealed partial class OverlayWindow
     private FrameworkElement BuildCommandPage()
     {
         var panel=new StackPanel{HorizontalAlignment=HorizontalAlignment.Stretch,Margin=new(3,0,3,0)};var heading=new DockPanel();var back=UI.Button("Back",CloseCommands);back.FontSize=11;back.MinHeight=28;back.Margin=new(8,0,0,0);DockPanel.SetDock(back,Dock.Right);heading.Children.Add(back);heading.Children.Add(UI.Heading("Command bar",18));panel.Children.Add(heading);
-        commandInput=UI.Input("Search commands","","Search NabyScape actions and saved shortcuts. Enter runs the first match.");commandInput.Margin=new(0,14,0,12);commandInput.MaxLength=120;panel.Children.Add(commandInput);
+        commandInput=UI.Input("Search commands","","Search Desktopia actions and saved shortcuts. Enter runs the first match.");commandInput.Margin=new(0,14,0,12);commandInput.MaxLength=120;panel.Children.Add(commandInput);
         if(commandResults.Parent is Panel parent)parent.Children.Remove(commandResults);panel.Children.Add(commandResults);
         commandInput.TextChanged+=(_,_)=>RefreshCommands();
         commandInput.PreviewKeyDown+=(_,e)=>{if(e.Key==Key.Enter && commandButtons.Count>0){commandButtons[0].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));e.Handled=true;}else if(e.Key==Key.Down && commandButtons.Count>0){commandButtons[0].Focus();e.Handled=true;}};
@@ -84,10 +84,10 @@ public sealed partial class OverlayWindow
     }
     private void BuildAwake(StackPanel panel)
     {
-        panel.Children.Add(UI.Heading("Keep awake",18));var hint=UI.Text("Temporarily prevent automatic sleep. Your normal power settings return when this stops or NabyScape quits.",12,UI.Muted);hint.Margin=new(0,8,0,14);panel.Children.Add(hint);
+        panel.Children.Add(UI.Heading("Keep awake",18));var hint=UI.Text("Temporarily prevent automatic sleep. Your normal power settings return when this stops or Desktopia quits.",12,UI.Muted);hint.Margin=new(0,8,0,14);panel.Children.Add(hint);
         awakeStatus=UI.Text("",14);awakeStatus.Margin=new(0,0,0,16);panel.Children.Add(awakeStatus);UpdateRoadmapStatus(DateTimeOffset.UtcNow);
         if(app.Awake.Active){panel.Children.Add(UI.Button("Stop keep awake",()=>MutateUtility(app.Awake.Stop),true));return;}
-        var durations=new ComboBox();foreach(string item in new[]{"30 minutes","1 hour","2 hours","Until NabyScape quits"})durations.Items.Add(item);durations.SelectedIndex=0;UI.Named(durations,"Keep awake duration");panel.Children.Add(durations);
+        var durations=new ComboBox();foreach(string item in new[]{"30 minutes","1 hour","2 hours","Until Desktopia quits"})durations.Items.Add(item);durations.SelectedIndex=0;UI.Named(durations,"Keep awake duration");panel.Children.Add(durations);
         var display=new CheckBox{Content="Keep the display on too",IsChecked=false,Margin=new(0,10,0,12)};panel.Children.Add(display);
         panel.Children.Add(UI.Button("Start keep awake",()=>MutateUtility(()=>app.Awake.Start(durations.SelectedIndex==3?null:TimeSpan.FromMinutes(new[]{30,60,120}[Math.Clamp(durations.SelectedIndex,0,2)]),display.IsChecked==true,DateTimeOffset.UtcNow)),true));
         panel.Children.Add(UI.Text("Explicit sleep, locking, and closing the lid remain under Windows control.",11,UI.Muted));

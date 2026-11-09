@@ -36,8 +36,18 @@ public sealed partial class OverlayWindow
     private bool? bodyHeadingWeight;
     private void StyleCategory(Button button,string page,bool selected=false)
     {
-        button.Background=Brushes.Transparent;button.MinWidth=18;button.MinHeight=30;button.Padding=new(5);button.Margin=new(0);
-        button.Content=new System.Windows.Shapes.Rectangle{Width=selected?13:5,Height=5,RadiusX=2.5,RadiusY=2.5,Fill=Accessibility.HighContrast?SystemColors.WindowTextBrush:selected?Brushes.White:UI.Muted,Opacity=Accessibility.HighContrast || selected?1:.5};
+        button.Background=Brushes.Transparent;
+        button.BorderBrush=Brushes.Transparent;
+        button.BorderThickness=new Thickness(0);
+        button.Padding=new Thickness(0);
+        button.Margin=new Thickness(0);
+        button.MinWidth=0;
+        button.MinHeight=0;
+        button.Cursor=Cursors.Hand;
+        button.FocusVisualStyle=null;
+        button.Content=selected
+            ? new Border { Width = 16, Height = 6, Margin = new Thickness(3, 0, 3, 0), CornerRadius = new CornerRadius(3), Background = UI.Brush("#E58A43") }
+            : new Border { Width = 6, Height = 6, Margin = new Thickness(3, 0, 3, 0), CornerRadius = new CornerRadius(3), Background = UI.Brush("#353330") };
         button.ToolTip=PageName(page);UI.Named(button,PageName(page));System.Windows.Automation.AutomationProperties.SetItemStatus(button,selected?Localization.Text("Selected"):"");
     }
     private void ApplyTitleTypography(bool mediaSummary)

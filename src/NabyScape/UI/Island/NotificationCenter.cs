@@ -94,7 +94,7 @@ public sealed partial class OverlayWindow
             var empty=new StackPanel{Margin=new(0,18,0,22),HorizontalAlignment=HorizontalAlignment.Center};
             var glyph=Icons.Create("bell",26,UI.Muted);glyph.HorizontalAlignment=HorizontalAlignment.Center;glyph.Margin=new(0,0,0,10);empty.Children.Add(glyph);
             var title=UI.Text(Localization.Text("No notifications yet"),14);title.HorizontalAlignment=HorizontalAlignment.Center;title.TextAlignment=TextAlignment.Center;empty.Children.Add(title);
-            var hint=UI.Text(Localization.Text(app.Settings.ExternalNotifications?"Alerts from NabyScape and your other apps will show up here.":"Timer, focus, download and update alerts will show up here."),11,UI.Muted);hint.TextAlignment=TextAlignment.Center;hint.Margin=new(0,5,0,0);empty.Children.Add(hint);
+            var hint=UI.Text(Localization.Text(app.Settings.ExternalNotifications?"Alerts from Desktopia and your other apps will show up here.":"Timer, focus, download and update alerts will show up here."),11,UI.Muted);hint.TextAlignment=TextAlignment.Center;hint.Margin=new(0,5,0,0);empty.Children.Add(hint);
             centerList.Children.Add(empty);return;
         }
         var now=DateTimeOffset.UtcNow;

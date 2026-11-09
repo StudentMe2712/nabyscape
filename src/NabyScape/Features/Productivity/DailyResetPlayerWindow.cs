@@ -130,16 +130,16 @@ internal sealed class DailyResetPlayerWindow : Window
         {
             LoadedBehavior = MediaState.Manual,
             UnloadedBehavior = MediaState.Stop,
-            Stretch = Stretch.UniformToFill,
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch
+            Stretch = Stretch.Uniform,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
         };
 
         var videoContainer = new Border
         {
             Margin = new Thickness(24, 0, 24, 0),
             CornerRadius = new CornerRadius(16),
-            Background = UI.Brush("#1B1B1E"),
+            Background = UI.Brush("#101113"),
             BorderBrush = UI.Brush("#252321"),
             BorderThickness = new Thickness(1),
             ClipToBounds = true,
